@@ -1,0 +1,101 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  height: 100%;
+}
+
+.eventList {
+  list-style: none;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  max-height: 250px;
+}
+
+.eventCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0,0,0,0.15);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  transition: all 0.2s ease;
+}
+
+.eventCard:hover {
+  border-color: var(--accent-color);
+  background: rgba(255,255,255,0.03);
+}
+
+.dateBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+  min-width: 48px;
+  padding: 4px;
+}
+
+.dateMonth {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--accent-light);
+  font-weight: 600;
+}
+
+.dateDay {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.eventInfo {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.eventTitle {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.eventSub {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.eventCountdown {
+  color: var(--accent-color);
+  font-weight: 500;
+}
+
+.deleteBtn {
+  opacity: 0.5;
+}
+
+.deleteBtn:hover {
+  opacity: 1;
+  color: #ef4444;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: var(--spacing-lg) 0;
+  font-size: 0.9rem;
+}
+
+.addForm {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+  align-items: center;
+}

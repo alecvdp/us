@@ -1,0 +1,124 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  height: 100%;
+}
+
+.filters {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+}
+
+.filterBtn {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+  padding: 4px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.filterBtn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.filterBtn.active {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+
+.taskList {
+  list-style: none;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  max-height: 250px;
+}
+
+.taskItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.15);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.taskItem.completed {
+  opacity: 0.5;
+}
+
+.taskItem.completed .taskTitle {
+  text-decoration: line-through;
+}
+
+.taskItem:hover {
+  border-color: var(--surface-border);
+  background: rgba(255,255,255,0.03);
+}
+
+.checkBtn {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid var(--text-secondary);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.checkBtnActive {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.taskTitle {
+  flex-grow: 1;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.taskBadge {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--surface-hover);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: var(--spacing-lg) 0;
+  font-size: 0.9rem;
+}
+
+.addForm {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+.typeSelect {
+  width: 100px;
+  flex-shrink: 0;
+}

@@ -1,0 +1,121 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  height: 100%;
+}
+
+.filters {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+}
+
+.filterBtn {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+  padding: 4px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.filterBtn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.filterBtn.active {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+
+.linkGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-sm);
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 250px;
+}
+
+.linkCard {
+  background: rgba(0,0,0,0.15);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.linkCard:hover {
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.linkArea {
+  flex-grow: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.linkTitle {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.linkUrl {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.badge {
+  position: absolute;
+  top: 8px;
+  right: 40px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  background: var(--surface-color);
+  border: 1px solid var(--surface-border);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.deleteBtn {
+  margin-right: var(--spacing-xs);
+  opacity: 0.5;
+}
+
+.deleteBtn:hover {
+  opacity: 1;
+  color: #ef4444;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: var(--spacing-lg) 0;
+  font-size: 0.9rem;
+}
+
+.addForm {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+  align-items: center;
+}
+
+.typeSelect {
+  width: 140px;
+}
