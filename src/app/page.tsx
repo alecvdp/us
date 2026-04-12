@@ -70,11 +70,11 @@ export default async function Home() {
           <div className={styles.widgetHeader}>
             <h2 className={styles.widgetTitle}>
               <Calendar size={20} />
-              Upcoming Events
+              Calendar & Agenda
             </h2>
           </div>
           <div className={styles.widgetContent}>
-            <EventsWidget initialEvents={events} />
+            <EventsWidget initialEvents={events} initialTasks={tasks} />
           </div>
         </div>
 

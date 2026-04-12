@@ -17,7 +17,7 @@
 
 .dashboardGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
   gap: var(--spacing-lg);
   align-items: start;
 }
@@ -47,4 +47,14 @@
   max-height: 400px;
   overflow-y: auto;
   padding-right: var(--spacing-xs);
+}
+
+@media (max-width: 640px) {
+  .header {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .headerTitle {
+    font-size: 1.6rem;
+  }
 }

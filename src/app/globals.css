@@ -11,6 +11,8 @@
   --surface-border: rgba(255, 255, 255, 0.08);
   --surface-hover: rgba(255, 255, 255, 0.05);
 
+  --accent-light: #c4b5fd;
+  --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 24px;
   --radius-full: 9999px;
@@ -141,6 +143,13 @@ a:hover {
   color: var(--text-primary);
 }
 
+.btn-icon:disabled,
+.input-base:disabled,
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
@@ -158,4 +167,15 @@ a:hover {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
+}
+
+@media (max-width: 640px) {
+  .app-container {
+    padding: var(--spacing-lg) var(--spacing-sm);
+    gap: var(--spacing-lg);
+  }
+
+  .glass-panel {
+    padding: var(--spacing-md);
+  }
 }

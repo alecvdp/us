@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { addLink, deleteLink } from "@/app/actions/links";
-import { Plus, Trash2, ExternalLink } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import styles from "./PastebinWidget.module.css";
 
 type LinkItem = {
@@ -15,6 +15,7 @@ type LinkItem = {
 export default function PastebinWidget({ initialLinks }: { initialLinks: LinkItem[] }) {
   const [filter, setFilter] = useState<"all" | "static" | "living">("all");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   // Auto-format links to add https:// if missing
   const formatUrl = (u: string) => {
@@ -31,10 +32,12 @@ export default function PastebinWidget({ initialLinks }: { initialLinks: LinkIte
   async function handleAdd(formData: FormData) {
     if (isSubmitting) return;
     setIsSubmitting(true);
-    await addLink(formData);
-    setIsSubmitting(false);
-    // @ts-ignore
-    document.getElementById("add-link-form")?.reset();
+    try {
+      await addLink(formData);
+      formRef.current?.reset();
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   async function handleDelete(id: string) {
@@ -90,7 +93,7 @@ export default function PastebinWidget({ initialLinks }: { initialLinks: LinkIte
         ))}
       </div>
 
-      <form id="add-link-form" action={handleAdd} className={styles.addForm}>
+      <form ref={formRef} action={handleAdd} className={styles.addForm}>
         <input type="text" name="title" placeholder="Title/Name" className="input-base" required />
         <input type="text" name="url" placeholder="URL (e.g. google.com)" className="input-base" required />
         <select name="isStatic" className={`input-base ${styles.typeSelect}`}>

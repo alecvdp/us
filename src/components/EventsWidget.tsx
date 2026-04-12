@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { addEvent, deleteEvent } from "@/app/actions/events";
-import { Plus, Trash2, CalendarDays } from "lucide-react";
+import { CalendarDays, CheckSquare2, Plus, Trash2 } from "lucide-react";
 import styles from "./EventsWidget.module.css";
+import { taskAssigneeMeta, type TaskAssignee } from "@/lib/tasks";
 
 type EventItem = {
   id: string;
@@ -11,16 +12,48 @@ type EventItem = {
   date: Date;
 };
 
-export default function EventsWidget({ initialEvents }: { initialEvents: EventItem[] }) {
+type TaskItem = {
+  id: string;
+  title: string;
+  assignee: TaskAssignee;
+  dueDate: Date | string | null;
+  completed: boolean;
+};
+
+type AgendaItem =
+  | {
+      id: string;
+      title: string;
+      date: Date;
+      kind: "event";
+    }
+  | {
+      id: string;
+      title: string;
+      date: Date;
+      kind: "task";
+      assignee: TaskAssignee;
+    };
+
+export default function EventsWidget({
+  initialEvents,
+  initialTasks,
+}: {
+  initialEvents: EventItem[];
+  initialTasks: TaskItem[];
+}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   async function handleAdd(formData: FormData) {
     if (isSubmitting) return;
     setIsSubmitting(true);
-    await addEvent(formData);
-    setIsSubmitting(false);
-    // @ts-ignore
-    document.getElementById("add-event-form")?.reset();
+    try {
+      await addEvent(formData);
+      formRef.current?.reset();
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   async function handleDelete(id: string) {
@@ -50,35 +83,73 @@ export default function EventsWidget({ initialEvents }: { initialEvents: EventIt
     return `In ${diffDays} days`;
   };
 
+  const agendaItems: AgendaItem[] = [
+    ...initialEvents.map((event) => ({
+      id: event.id,
+      title: event.title,
+      date: new Date(event.date),
+      kind: "event" as const,
+    })),
+    ...initialTasks
+      .filter((task) => !task.completed && task.dueDate)
+      .map((task) => ({
+        id: task.id,
+        title: task.title,
+        date: new Date(task.dueDate as string | Date),
+        kind: "task" as const,
+        assignee: task.assignee,
+      })),
+  ].sort((left, right) => left.date.getTime() - right.date.getTime());
+
   return (
     <div className={styles.container}>
       <div className={styles.eventList}>
-        {initialEvents.length === 0 ? (
-          <p className={styles.empty}>No upcoming events</p>
+        {agendaItems.length === 0 ? (
+          <p className={styles.empty}>No upcoming events or due tasks</p>
         ) : null}
         
-        {initialEvents.map(event => (
-          <div key={event.id} className={styles.eventCard}>
+        {agendaItems.map((item) => (
+          <div key={`${item.kind}-${item.id}`} className={styles.eventCard}>
             <div className={styles.dateBox}>
-              <span className={styles.dateMonth}>{new Date(event.date).toLocaleDateString('en-US', { month: 'short' })}</span>
-              <span className={styles.dateDay}>{new Date(event.date).getDate()}</span>
+              <span className={styles.dateMonth}>{new Date(item.date).toLocaleDateString("en-US", { month: "short" })}</span>
+              <span className={styles.dateDay}>{new Date(item.date).getDate()}</span>
             </div>
             <div className={styles.eventInfo}>
-              <span className={styles.eventTitle}>{event.title}</span>
-              <span className={styles.eventSub}>{formatEventDate(event.date)} &middot; <span className={styles.eventCountdown}>{getDaysUntil(event.date)}</span></span>
+              <div className={styles.itemHeader}>
+                <span className={styles.eventTitle}>{item.title}</span>
+                <span className={`${styles.itemBadge} ${item.kind === "task" ? styles.taskBadge : styles.eventBadge}`}>
+                  {item.kind === "task" ? "Task" : "Event"}
+                </span>
+              </div>
+              <span className={styles.eventSub}>
+                {formatEventDate(item.date)} &middot; <span className={styles.eventCountdown}>{getDaysUntil(item.date)}</span>
+                {item.kind === "task" ? (
+                  <>
+                    {" "}·{" "}
+                    <span className={styles.assigneeLabel}>{taskAssigneeMeta[item.assignee].label}</span>
+                  </>
+                ) : null}
+              </span>
             </div>
-            <button className={`${styles.deleteBtn} btn-icon`} onClick={() => handleDelete(event.id)}>
-              <Trash2 size={14} />
-            </button>
+            {item.kind === "event" ? (
+              <button className={`${styles.deleteBtn} btn-icon`} onClick={() => handleDelete(item.id)}>
+                <Trash2 size={14} />
+              </button>
+            ) : (
+              <div className={styles.taskIconWrap}>
+                <CheckSquare2 size={15} />
+              </div>
+            )}
           </div>
         ))}
       </div>
 
-      <form id="add-event-form" action={handleAdd} className={styles.addForm}>
-        <input type="text" name="title" placeholder="Event Name" className="input-base" required />
+      <form ref={formRef} action={handleAdd} className={styles.addForm}>
+        <input type="text" name="title" placeholder="Event name" className="input-base" required />
         <input type="date" name="date" className="input-base" required />
         <button type="submit" className="btn-icon">
-          <Plus size={20} />
+          <CalendarDays size={16} />
+          <Plus size={16} />
         </button>
       </form>
     </div>

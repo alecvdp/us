@@ -61,6 +61,13 @@
   flex-direction: column;
 }
 
+.itemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .eventTitle {
   font-weight: 600;
   font-size: 0.95rem;
@@ -76,6 +83,27 @@
   font-weight: 500;
 }
 
+.itemBadge {
+  font-size: 0.68rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.eventBadge {
+  background: rgba(139, 92, 246, 0.15);
+  color: #ddd6fe;
+}
+
+.taskBadge {
+  background: rgba(59, 130, 246, 0.14);
+  color: #bfdbfe;
+}
+
+.assigneeLabel {
+  color: var(--text-primary);
+}
+
 .deleteBtn {
   opacity: 0.5;
 }
@@ -83,6 +111,11 @@
 .deleteBtn:hover {
   opacity: 1;
   color: #ef4444;
+}
+
+.taskIconWrap {
+  color: var(--text-secondary);
+  padding: var(--spacing-xs);
 }
 
 .empty {

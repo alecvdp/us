@@ -10,6 +10,13 @@ datasource db {
 model Task {
   id        String   @id @default(uuid())
   title     String
+  assignee  String   @default("SHARED")
+  priority  String   @default("MEDIUM")
+  bucket    String   @default("THIS_WEEK")
+  recurrence String  @default("NONE")
+  dueDate   DateTime?
+  lastCompletedAt DateTime?
+  nextResetAt DateTime?
   isGrocery Boolean  @default(false)
   completed Boolean  @default(false)
   createdAt DateTime @default(now())
