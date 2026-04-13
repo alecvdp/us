@@ -142,17 +142,22 @@ export async function addTask(formData: FormData) {
 
   if (!title) return;
 
-  await prisma.task.create({
-    data: {
-      title,
-      assignee,
-      priority,
-      bucket,
-      recurrence,
-      dueDate,
-      isGrocery,
-    },
-  });
+  try {
+    await prisma.task.create({
+      data: {
+        title,
+        assignee,
+        priority,
+        bucket,
+        recurrence,
+        dueDate,
+        isGrocery,
+      },
+    });
+  } catch (err) {
+    console.error("Failed to add task", err);
+    throw new Error("Failed to add task");
+  }
 
   revalidatePath("/");
 }
@@ -173,19 +178,24 @@ export async function updateTask(
 
   if (!title) return;
 
-  await prisma.task.update({
-    where: { id },
-    data: {
-      title,
-      assignee: parseAssignee(input.assignee),
-      priority: parsePriority(input.priority),
-      bucket: parseBucket(input.bucket),
-      recurrence: parseRecurrence(input.recurrence),
-      dueDate: parseDueDate(input.dueDate),
-      isGrocery: Boolean(input.isGrocery),
-      nextResetAt: null,
-    },
-  });
+  try {
+    await prisma.task.update({
+      where: { id },
+      data: {
+        title,
+        assignee: parseAssignee(input.assignee),
+        priority: parsePriority(input.priority),
+        bucket: parseBucket(input.bucket),
+        recurrence: parseRecurrence(input.recurrence),
+        dueDate: parseDueDate(input.dueDate),
+        isGrocery: Boolean(input.isGrocery),
+        nextResetAt: null,
+      },
+    });
+  } catch (err) {
+    console.error("Failed to update task", err);
+    throw new Error("Failed to update task");
+  }
 
   revalidatePath("/");
 }
@@ -196,68 +206,83 @@ export async function moveTask(
 ) {
   const placement = getSectionUpdate(input.section);
 
-  await prisma.task.update({
-    where: { id },
-    data: {
-      assignee: parseAssignee(input.assignee),
-      isGrocery: placement.isGrocery,
-      bucket: placement.bucket,
-    },
-  });
+  try {
+    await prisma.task.update({
+      where: { id },
+      data: {
+        assignee: parseAssignee(input.assignee),
+        isGrocery: placement.isGrocery,
+        bucket: placement.bucket,
+      },
+    });
+  } catch (err) {
+    console.error("Failed to move task", err);
+    throw new Error("Failed to move task");
+  }
 
   revalidatePath("/");
 }
 
 export async function toggleTask(id: string, completed: boolean) {
-  const task = await prisma.task.findUnique({
-    where: { id },
-  });
-
-  if (!task) return;
-
-  const recurrence = parseRecurrence(task.recurrence);
-
-  if (completed && recurrence !== "NONE") {
-    const baseDate = task.dueDate ?? new Date();
-    const nextResetAt = addInterval(baseDate, recurrence);
-
-    await prisma.task.update({
+  try {
+    const task = await prisma.task.findUnique({
       where: { id },
-      data: {
-        completed: true,
-        lastCompletedAt: new Date(),
-        nextResetAt,
-        dueDate: task.dueDate ? nextResetAt : task.dueDate,
-      },
     });
-  } else if (!completed && recurrence !== "NONE" && task.nextResetAt) {
-    await prisma.task.update({
-      where: { id },
-      data: {
-        completed: false,
-        lastCompletedAt: null,
-        nextResetAt: null,
-        dueDate: task.dueDate ? subtractInterval(task.dueDate, recurrence) : null,
-      },
-    });
-  } else {
-    await prisma.task.update({
-      where: { id },
-      data: {
-        completed,
-        lastCompletedAt: completed ? new Date() : null,
-        nextResetAt: null,
-      },
-    });
+
+    if (!task) return;
+
+    const recurrence = parseRecurrence(task.recurrence);
+
+    if (completed && recurrence !== "NONE") {
+      const baseDate = task.dueDate ?? new Date();
+      const nextResetAt = addInterval(baseDate, recurrence);
+
+      await prisma.task.update({
+        where: { id },
+        data: {
+          completed: true,
+          lastCompletedAt: new Date(),
+          nextResetAt,
+          dueDate: task.dueDate ? nextResetAt : task.dueDate,
+        },
+      });
+    } else if (!completed && recurrence !== "NONE" && task.nextResetAt) {
+      await prisma.task.update({
+        where: { id },
+        data: {
+          completed: false,
+          lastCompletedAt: null,
+          nextResetAt: null,
+          dueDate: task.dueDate ? subtractInterval(task.dueDate, recurrence) : null,
+        },
+      });
+    } else {
+      await prisma.task.update({
+        where: { id },
+        data: {
+          completed,
+          lastCompletedAt: completed ? new Date() : null,
+          nextResetAt: null,
+        },
+      });
+    }
+  } catch (err) {
+    console.error("Failed to toggle task", err);
+    throw new Error("Failed to toggle task");
   }
 
   revalidatePath("/");
 }
 
 export async function deleteTask(id: string) {
-  await prisma.task.delete({
-    where: { id },
-  });
+  try {
+    await prisma.task.delete({
+      where: { id },
+    });
+  } catch (err) {
+    console.error("Failed to delete task", err);
+    throw new Error("Failed to delete task");
+  }
 
   revalidatePath("/");
 }

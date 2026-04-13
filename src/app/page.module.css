@@ -49,6 +49,10 @@
   padding-right: var(--spacing-xs);
 }
 
+.tasksContent {
+  max-height: 70vh;
+}
+
 @media (max-width: 640px) {
   .header {
     margin-bottom: var(--spacing-md);

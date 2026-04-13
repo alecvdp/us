@@ -2,7 +2,19 @@
 
 import { useMemo, useRef, useState } from "react";
 import { addTask, deleteTask, moveTask, toggleTask, updateTask } from "@/app/actions/tasks";
-import { ArrowLeft, ArrowRight, CalendarDays, Check, GripVertical, Pencil, Plus, Trash2, X } from "lucide-react";
+import {
+  Archive,
+  CalendarDays,
+  Check,
+  Flag,
+  Pencil,
+  Plus,
+  Repeat,
+  ShoppingCart,
+  Star,
+  Trash2,
+  X,
+} from "lucide-react";
 import styles from "./TasksWidget.module.css";
 import {
   taskAssigneeMeta,
@@ -43,7 +55,6 @@ function getTaskSection(task: Task): TaskSection {
 
 function formatDateForInput(date: Task["dueDate"]) {
   if (!date) return "";
-
   const parsed = new Date(date);
   const year = parsed.getFullYear();
   const month = `${parsed.getMonth() + 1}`.padStart(2, "0");
@@ -51,43 +62,38 @@ function formatDateForInput(date: Task["dueDate"]) {
   return `${year}-${month}-${day}`;
 }
 
-function formatDueDate(date: Task["dueDate"]) {
-  if (!date) return null;
-
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-  }).format(new Date(date));
-}
-
 function formatResetLabel(date: Task["nextResetAt"]) {
   if (!date) return null;
-
   const resetDate = new Date(date);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   resetDate.setHours(0, 0, 0, 0);
-
   const diffDays = Math.round((resetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
   if (diffDays <= 0) return "Resets today";
   if (diffDays === 1) return "Resets tomorrow";
-
-  return `Resets ${new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-  }).format(resetDate)}`;
+  return `Resets ${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(resetDate)}`;
 }
 
-function getQuickMoveOptions(task: Task) {
-  if (task.isGrocery) return { previous: null, next: null };
-
-  const index = taskBucketOrder.indexOf(task.bucket);
-  return {
-    previous: index > 0 ? taskBucketOrder[index - 1] : null,
-    next: index < taskBucketOrder.length - 1 ? taskBucketOrder[index + 1] : null,
-  };
+function getDueLabel(date: Task["dueDate"]) {
+  if (!date) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = new Date(date);
+  due.setHours(0, 0, 0, 0);
+  const diff = Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  if (diff < 0) return { text: `${Math.abs(diff)}d overdue`, isUrgent: true };
+  if (diff === 0) return { text: "today", isUrgent: true };
+  if (diff === 1) return { text: "tomorrow", isUrgent: false };
+  return { text: `${diff}d left`, isUrgent: false };
 }
+
+const sectionIcons: Record<TaskSection, React.ReactNode> = {
+  TODAY: <Star size={16} />,
+  THIS_WEEK: <CalendarDays size={16} />,
+  RECURRING: <Repeat size={16} />,
+  LATER: <Archive size={16} />,
+  GROCERIES: <ShoppingCart size={16} />,
+};
 
 export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) {
   const [statusFilter, setStatusFilter] = useState<"open" | "completed" | "all">("open");
@@ -103,6 +109,7 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
   const [editingDueDate, setEditingDueDate] = useState("");
   const [editingIsGrocery, setEditingIsGrocery] = useState(false);
   const [newTaskType, setNewTaskType] = useState<"false" | "true">("false");
+  const [showAddForm, setShowAddForm] = useState(false);
   const [dragTarget, setDragTarget] = useState<string | null>(null);
   const addFormRef = useRef<HTMLFormElement>(null);
 
@@ -117,21 +124,22 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
           (typeFilter === "tasks" ? !task.isGrocery : task.isGrocery);
         return matchesStatus && matchesType;
       }),
-    [initialTasks, statusFilter, typeFilter]
+    [initialTasks, statusFilter, typeFilter],
   );
 
-  const groupedTasks = useMemo(
+  const sectionedTasks = useMemo(
     () =>
-      taskAssigneeOrder.map((assignee) => ({
-        assignee,
-        tasks: filteredTasks.filter((task) => task.assignee === assignee),
-      })),
-    [filteredTasks]
+      taskSectionOrder
+        .map((section) => ({
+          section,
+          tasks: filteredTasks.filter((task) => getTaskSection(task) === section),
+        }))
+        .filter(({ tasks }) => tasks.length > 0),
+    [filteredTasks],
   );
 
   async function handleAdd(formData: FormData) {
     if (isSubmitting) return;
-
     setIsSubmitting(true);
     try {
       await addTask(formData);
@@ -159,9 +167,7 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
     setLoadingIds((prev) => new Set(prev).add(id));
     try {
       await deleteTask(id);
-      if (editingTaskId === id) {
-        setEditingTaskId(null);
-      }
+      if (editingTaskId === id) setEditingTaskId(null);
     } finally {
       setLoadingIds((prev) => {
         const next = new Set(prev);
@@ -171,13 +177,10 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
     }
   }
 
-  async function handleMove(task: Task, section: TaskSection, assignee: TaskAssignee = task.assignee) {
+  async function handleMove(task: Task, section: TaskSection) {
     setLoadingIds((prev) => new Set(prev).add(task.id));
     try {
-      await moveTask(task.id, {
-        assignee,
-        section,
-      });
+      await moveTask(task.id, { assignee: task.assignee, section });
     } finally {
       setLoadingIds((prev) => {
         const next = new Set(prev);
@@ -233,11 +236,10 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
               className={`${styles.filterBtn} ${statusFilter === value ? styles.active : ""}`}
               onClick={() => setStatusFilter(value)}
             >
-              {value === "open" ? "Open" : value === "completed" ? "Completed" : "All"}
+              {value === "open" ? "Open" : value === "completed" ? "Done" : "All"}
             </button>
           ))}
         </div>
-
         <div className={styles.filters}>
           <span className={styles.filterLabel}>Type</span>
           {(["all", "tasks", "groceries"] as const).map((value) => (
@@ -253,357 +255,301 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
         </div>
       </div>
 
-      <div className={styles.columns}>
-        {groupedTasks.map(({ assignee, tasks }) => {
-          const meta = taskAssigneeMeta[assignee];
-          const sections = taskSectionOrder.map((section) => ({
-            section,
-            tasks: tasks.filter((task) => getTaskSection(task) === section),
-          }));
-          const visibleSections = sections.filter(({ tasks: sectionTasks }) => sectionTasks.length > 0);
-
-          return (
-            <section key={assignee} className={styles.column}>
-              <header className={styles.columnHeader}>
-                <div className={styles.columnIdentity}>
-                  <span className={`${styles.avatar} ${styles[meta.accentClass]}`}>{meta.avatar}</span>
-                  <div>
-                    <h3 className={styles.columnTitle}>{meta.label}</h3>
-                    <p className={styles.columnCount}>
-                      {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
-                    </p>
-                  </div>
-                </div>
-              </header>
-
-              {visibleSections.length === 0 ? (
-                <div className={styles.empty}>Nothing here right now.</div>
-              ) : (
-                <div className={styles.sectionStack}>
-                  {visibleSections.map(({ section, tasks: sectionTasks }) => (
-                    <section
-                      key={section}
-                      className={`${styles.sectionCard} ${
-                        dragTarget === `${assignee}-${section}` ? styles.sectionCardActive : ""
-                      }`}
-                      onDragOver={(event) => {
-                        event.preventDefault();
-                        setDragTarget(`${assignee}-${section}`);
-                      }}
-                      onDragLeave={() => setDragTarget((current) => (current === `${assignee}-${section}` ? null : current))}
-                      onDrop={async (event) => {
-                        event.preventDefault();
-                        const taskId = event.dataTransfer.getData("text/task-id");
-                        const draggedTask = initialTasks.find((task) => task.id === taskId);
-
-                        if (!draggedTask) return;
-
-                        await handleMove(draggedTask, section, assignee);
-                      }}
-                    >
-                      <header className={styles.sectionHeader}>
-                        <h4 className={styles.sectionTitle}>{taskSectionMeta[section].label}</h4>
-                        <span className={styles.sectionCount}>{sectionTasks.length}</span>
-                      </header>
-
-                      <ul className={styles.taskList}>
-                        {sectionTasks.map((task) => {
-                          const isEditing = editingTaskId === task.id;
-                          const isBusy = loadingIds.has(task.id);
-                          const dueDateLabel = formatDueDate(task.dueDate);
-                          const resetLabel = task.completed ? formatResetLabel(task.nextResetAt) : null;
-                          const quickMove = getQuickMoveOptions(task);
-                          const previousBucket = quickMove.previous;
-                          const nextBucket = quickMove.next;
-
-                          return (
-                            <li
-                              key={task.id}
-                              className={`${styles.taskCard} ${task.completed ? styles.completed : ""}`}
-                              draggable={!isEditing}
-                              onDragStart={(event) => {
-                                event.dataTransfer.setData("text/task-id", task.id);
-                                event.dataTransfer.effectAllowed = "move";
-                              }}
-                              onDragEnd={() => setDragTarget(null)}
-                            >
-                              {isEditing ? (
-                                <div className={styles.editCard}>
-                                  <input
-                                    type="text"
-                                    value={editingTitle}
-                                    onChange={(event) => setEditingTitle(event.target.value)}
-                                    className="input-base"
-                                    placeholder="Task title"
-                                    maxLength={120}
-                                  />
-                                  <div className={styles.editGrid}>
-                                    <select
-                                      className={`input-base ${styles.select}`}
-                                      value={editingAssignee}
-                                      onChange={(event) => setEditingAssignee(event.target.value as TaskAssignee)}
-                                    >
-                                      {taskAssigneeOrder.map((value) => (
-                                        <option key={value} value={value}>
-                                          {taskAssigneeMeta[value].label}
-                                        </option>
-                                      ))}
-                                    </select>
-                                    <select
-                                      className={`input-base ${styles.select}`}
-                                      value={editingPriority}
-                                      onChange={(event) => setEditingPriority(event.target.value as TaskPriority)}
-                                    >
-                                      {taskPriorityOrder.map((value) => (
-                                        <option key={value} value={value}>
-                                          {taskPriorityMeta[value].label}
-                                        </option>
-                                      ))}
-                                    </select>
-                                    <select
-                                      className={`input-base ${styles.select}`}
-                                      value={editingIsGrocery ? "true" : "false"}
-                                      onChange={(event) => setEditingIsGrocery(event.target.value === "true")}
-                                    >
-                                      <option value="false">Task</option>
-                                      <option value="true">Grocery</option>
-                                    </select>
-                                    <select
-                                      className={`input-base ${styles.select}`}
-                                      value={editingBucket}
-                                      disabled={editingIsGrocery}
-                                      onChange={(event) => setEditingBucket(event.target.value as TaskBucket)}
-                                    >
-                                      {taskBucketOrder.map((value) => (
-                                        <option key={value} value={value}>
-                                          {taskBucketMeta[value].label}
-                                        </option>
-                                      ))}
-                                    </select>
-                                      <select
-                                        className={`input-base ${styles.select}`}
-                                        value={editingRecurrence}
-                                        onChange={(event) => setEditingRecurrence(event.target.value as TaskRecurrence)}
-                                      >
-                                        {taskRecurrenceOrder.map((value) => (
-                                          <option key={value} value={value}>
-                                            {taskRecurrenceMeta[value].label}
-                                          </option>
-                                        ))}
-                                      </select>
-                                    <div className={styles.dateField}>
-                                      <CalendarDays size={14} />
-                                      <input
-                                        type="date"
-                                        value={editingDueDate}
-                                        className={`input-base ${styles.dateInput}`}
-                                        onChange={(event) => setEditingDueDate(event.target.value)}
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className={styles.editActions}>
-                                    <button
-                                      type="button"
-                                      className={styles.secondaryBtn}
-                                      onClick={() => setEditingTaskId(null)}
-                                      disabled={isBusy}
-                                    >
-                                      <X size={14} />
-                                      Cancel
-                                    </button>
-                                    <button
-                                      type="button"
-                                      className={styles.primaryBtn}
-                                      onClick={() => handleUpdate(task.id)}
-                                      disabled={isBusy || !editingTitle.trim()}
-                                    >
-                                      <Check size={14} />
-                                      Save
-                                    </button>
-                                  </div>
-                                </div>
-                              ) : (
-                                <>
-                                  <div className={styles.taskMain}>
-                                    <span className={styles.dragHandle} aria-hidden="true">
-                                      <GripVertical size={15} />
-                                    </span>
-                                    <button
-                                      type="button"
-                                      className={`${styles.checkBtn} ${task.completed ? styles.checkBtnActive : ""}`}
-                                      onClick={() => handleToggle(task.id, task.completed)}
-                                      disabled={isBusy}
-                                    >
-                                      {task.completed ? <Check size={14} strokeWidth={3} /> : null}
-                                    </button>
-                                    <div className={styles.taskBody}>
-                                      <span className={styles.taskTitle}>{task.title}</span>
-                                      <div className={styles.taskMeta}>
-                                        <span className={styles.taskBadge}>{task.isGrocery ? "Grocery" : "Task"}</span>
-                                        <span
-                                          className={`${styles.priorityBadge} ${
-                                            styles[taskPriorityMeta[task.priority].className]
-                                          }`}
-                                        >
-                                          {taskPriorityMeta[task.priority].label}
-                                        </span>
-                                        {dueDateLabel ? (
-                                          <span className={styles.dueBadge}>
-                                            <CalendarDays size={12} />
-                                            {dueDateLabel}
-                                          </span>
-                                        ) : null}
-                                        {task.recurrence !== "NONE" ? (
-                                          <span className={styles.recurrenceBadge}>
-                                            {taskRecurrenceMeta[task.recurrence].label}
-                                          </span>
-                                        ) : null}
-                                        {resetLabel ? <span className={styles.resetBadge}>{resetLabel}</span> : null}
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div className={styles.taskActions}>
-                                    {previousBucket ? (
-                                      <button
-                                        type="button"
-                                        className="btn-icon"
-                                        onClick={() => handleMove(task, previousBucket)}
-                                        disabled={isBusy}
-                                        title={`Move to ${taskBucketMeta[previousBucket].label}`}
-                                      >
-                                        <ArrowLeft size={15} />
-                                      </button>
-                                    ) : null}
-                                    {nextBucket ? (
-                                      <button
-                                        type="button"
-                                        className="btn-icon"
-                                        onClick={() => handleMove(task, nextBucket)}
-                                        disabled={isBusy}
-                                        title={`Move to ${taskBucketMeta[nextBucket].label}`}
-                                      >
-                                        <ArrowRight size={15} />
-                                      </button>
-                                    ) : null}
-                                    <button
-                                      type="button"
-                                      className="btn-icon"
-                                      onClick={() => startEditing(task)}
-                                      disabled={isBusy}
-                                    >
-                                      <Pencil size={15} />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      className="btn-icon"
-                                      onClick={() => handleDelete(task.id)}
-                                      disabled={isBusy}
-                                    >
-                                      <Trash2 size={15} />
-                                    </button>
-                                  </div>
-                                </>
-                              )}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </section>
-                  ))}
-                </div>
-              )}
-            </section>
-          );
-        })}
-      </div>
-
-      <form ref={addFormRef} action={handleAdd} className={styles.addForm}>
-        <input
-          type="text"
-          name="title"
-          placeholder="Add a shared or assigned task..."
-          className="input-base"
-          disabled={isSubmitting}
-          maxLength={120}
-          required
-        />
-        <div className={styles.addRow}>
-          <select
-            name="assignee"
-            className={`input-base ${styles.select}`}
-            defaultValue="SHARED"
-            disabled={isSubmitting}
+      {sectionedTasks.length === 0 ? (
+        <p className={styles.empty}>Nothing here right now.</p>
+      ) : (
+        sectionedTasks.map(({ section, tasks }) => (
+          <div
+            key={section}
+            className={`${styles.section} ${dragTarget === section ? styles.sectionActive : ""}`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragTarget(section);
+            }}
+            onDragLeave={() =>
+              setDragTarget((curr) => (curr === section ? null : curr))
+            }
+            onDrop={async (e) => {
+              e.preventDefault();
+              const taskId = e.dataTransfer.getData("text/task-id");
+              const draggedTask = initialTasks.find((t) => t.id === taskId);
+              if (draggedTask) await handleMove(draggedTask, section);
+            }}
           >
-            {taskAssigneeOrder.map((assignee) => (
-              <option key={assignee} value={assignee}>
-                {taskAssigneeMeta[assignee].label}
-              </option>
-            ))}
-          </select>
-          <select
-            name="isGrocery"
-            className={`input-base ${styles.select}`}
-            defaultValue="false"
-            disabled={isSubmitting}
-            onChange={(event) => setNewTaskType(event.target.value as "false" | "true")}
-          >
-            <option value="false">Task</option>
-            <option value="true">Grocery</option>
-          </select>
-        </div>
-        <div className={styles.addGrid}>
-          <select
-            name="priority"
-            className={`input-base ${styles.select}`}
-            defaultValue="MEDIUM"
-            disabled={isSubmitting}
-          >
-            {taskPriorityOrder.map((priority) => (
-              <option key={priority} value={priority}>
-                {taskPriorityMeta[priority].label}
-              </option>
-            ))}
-          </select>
-          <select
-            name="recurrence"
-            className={`input-base ${styles.select}`}
-            defaultValue="NONE"
-            disabled={isSubmitting}
-          >
-            {taskRecurrenceOrder.map((recurrence) => (
-              <option key={recurrence} value={recurrence}>
-                {taskRecurrenceMeta[recurrence].label}
-              </option>
-            ))}
-          </select>
-          <select
-            name="bucket"
-            className={`input-base ${styles.select}`}
-            defaultValue="THIS_WEEK"
-            disabled={isSubmitting || newTaskType === "true"}
-          >
-            {taskBucketOrder.map((bucket) => (
-              <option key={bucket} value={bucket}>
-                {taskBucketMeta[bucket].label}
-              </option>
-            ))}
-          </select>
-          <div className={styles.dateField}>
-            <CalendarDays size={14} />
-            <input
-              type="date"
-              name="dueDate"
-              className={`input-base ${styles.dateInput}`}
-              disabled={isSubmitting}
-            />
+            <header className={styles.sectionHeader}>
+              <span className={styles.sectionIcon}>{sectionIcons[section]}</span>
+              <h4 className={styles.sectionTitle}>{taskSectionMeta[section].label}</h4>
+              <span className={styles.sectionCount}>{tasks.length}</span>
+            </header>
+
+            <ul className={styles.taskList}>
+              {tasks.map((task) => {
+                const isEditing = editingTaskId === task.id;
+                const isBusy = loadingIds.has(task.id);
+                const dueInfo = getDueLabel(task.dueDate);
+                const resetLabel = task.completed ? formatResetLabel(task.nextResetAt) : null;
+
+                return (
+                  <li
+                    key={task.id}
+                    className={`${styles.taskRow} ${task.completed ? styles.completed : ""}`}
+                    draggable={!isEditing}
+                    onDragStart={(e) => {
+                      e.dataTransfer.setData("text/task-id", task.id);
+                      e.dataTransfer.effectAllowed = "move";
+                    }}
+                    onDragEnd={() => setDragTarget(null)}
+                  >
+                    {isEditing ? (
+                      <div className={styles.editCard}>
+                        <input
+                          type="text"
+                          value={editingTitle}
+                          onChange={(e) => setEditingTitle(e.target.value)}
+                          className="input-base"
+                          placeholder="Task title"
+                          maxLength={120}
+                        />
+                        <div className={styles.editGrid}>
+                          <select
+                            className={`input-base ${styles.select}`}
+                            value={editingAssignee}
+                            onChange={(e) => setEditingAssignee(e.target.value as TaskAssignee)}
+                          >
+                            {taskAssigneeOrder.map((v) => (
+                              <option key={v} value={v}>{taskAssigneeMeta[v].label}</option>
+                            ))}
+                          </select>
+                          <select
+                            className={`input-base ${styles.select}`}
+                            value={editingPriority}
+                            onChange={(e) => setEditingPriority(e.target.value as TaskPriority)}
+                          >
+                            {taskPriorityOrder.map((v) => (
+                              <option key={v} value={v}>{taskPriorityMeta[v].label}</option>
+                            ))}
+                          </select>
+                          <select
+                            className={`input-base ${styles.select}`}
+                            value={editingIsGrocery ? "true" : "false"}
+                            onChange={(e) => setEditingIsGrocery(e.target.value === "true")}
+                          >
+                            <option value="false">Task</option>
+                            <option value="true">Grocery</option>
+                          </select>
+                          <select
+                            className={`input-base ${styles.select}`}
+                            value={editingBucket}
+                            disabled={editingIsGrocery}
+                            onChange={(e) => setEditingBucket(e.target.value as TaskBucket)}
+                          >
+                            {taskBucketOrder.map((v) => (
+                              <option key={v} value={v}>{taskBucketMeta[v].label}</option>
+                            ))}
+                          </select>
+                          <select
+                            className={`input-base ${styles.select}`}
+                            value={editingRecurrence}
+                            onChange={(e) => setEditingRecurrence(e.target.value as TaskRecurrence)}
+                          >
+                            {taskRecurrenceOrder.map((v) => (
+                              <option key={v} value={v}>{taskRecurrenceMeta[v].label}</option>
+                            ))}
+                          </select>
+                          <div className={styles.dateField}>
+                            <CalendarDays size={14} />
+                            <input
+                              type="date"
+                              value={editingDueDate}
+                              className={`input-base ${styles.dateInput}`}
+                              onChange={(e) => setEditingDueDate(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className={styles.editActions}>
+                          <button
+                            type="button"
+                            className={styles.secondaryBtn}
+                            onClick={() => setEditingTaskId(null)}
+                            disabled={isBusy}
+                          >
+                            <X size={14} /> Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.primaryBtn}
+                            onClick={() => handleUpdate(task.id)}
+                            disabled={isBusy || !editingTitle.trim()}
+                          >
+                            <Check size={14} /> Save
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className={`${styles.checkbox} ${task.completed ? styles.checked : ""}`}
+                          onClick={() => handleToggle(task.id, task.completed)}
+                          disabled={isBusy}
+                        >
+                          {task.completed ? <Check size={13} strokeWidth={3} /> : null}
+                        </button>
+
+                        <div className={styles.taskBody}>
+                          <span className={styles.taskTitle}>{task.title}</span>
+                          <span className={styles.taskSubtitle}>
+                            {taskAssigneeMeta[task.assignee].label}
+                            {resetLabel ? ` \u00b7 ${resetLabel}` : ""}
+                          </span>
+                        </div>
+
+                        <div className={styles.taskMeta}>
+                          {task.priority !== "MEDIUM" ? (
+                            <span
+                              className={`${styles.priorityDot} ${styles[taskPriorityMeta[task.priority].className]}`}
+                            />
+                          ) : null}
+                          {task.recurrence !== "NONE" ? (
+                            <span className={styles.inlineIcon} title={taskRecurrenceMeta[task.recurrence].label}>
+                              <Repeat size={13} />
+                            </span>
+                          ) : null}
+                          {dueInfo ? (
+                            <span className={`${styles.dueLabel} ${dueInfo.isUrgent ? styles.dueToday : ""}`}>
+                              <Flag size={12} />
+                              {dueInfo.text}
+                            </span>
+                          ) : null}
+                        </div>
+
+                        <div className={styles.taskActions}>
+                          <button
+                            type="button"
+                            className="btn-icon"
+                            onClick={() => startEditing(task)}
+                            disabled={isBusy}
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-icon"
+                            onClick={() => handleDelete(task.id)}
+                            disabled={isBusy}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           </div>
-          <button type="submit" className={styles.primaryBtn} disabled={isSubmitting}>
-            <Plus size={16} />
-            Add
-          </button>
+        ))
+      )}
+
+      {showAddForm ? (
+        <div className={styles.addPanel}>
+          <form ref={addFormRef} action={handleAdd} className={styles.addForm}>
+            <input
+              type="text"
+              name="title"
+              placeholder="What needs to be done?"
+              className="input-base"
+              disabled={isSubmitting}
+              maxLength={120}
+              required
+            />
+            <div className={styles.addRow}>
+              <select
+                name="assignee"
+                className={`input-base ${styles.select}`}
+                defaultValue="SHARED"
+                disabled={isSubmitting}
+              >
+                {taskAssigneeOrder.map((assignee) => (
+                  <option key={assignee} value={assignee}>
+                    {taskAssigneeMeta[assignee].label}
+                  </option>
+                ))}
+              </select>
+              <select
+                name="isGrocery"
+                className={`input-base ${styles.select}`}
+                defaultValue="false"
+                disabled={isSubmitting}
+                onChange={(e) => setNewTaskType(e.target.value as "false" | "true")}
+              >
+                <option value="false">Task</option>
+                <option value="true">Grocery</option>
+              </select>
+            </div>
+            <div className={styles.addGrid}>
+              <select
+                name="priority"
+                className={`input-base ${styles.select}`}
+                defaultValue="MEDIUM"
+                disabled={isSubmitting}
+              >
+                {taskPriorityOrder.map((priority) => (
+                  <option key={priority} value={priority}>
+                    {taskPriorityMeta[priority].label}
+                  </option>
+                ))}
+              </select>
+              <select
+                name="recurrence"
+                className={`input-base ${styles.select}`}
+                defaultValue="NONE"
+                disabled={isSubmitting}
+              >
+                {taskRecurrenceOrder.map((recurrence) => (
+                  <option key={recurrence} value={recurrence}>
+                    {taskRecurrenceMeta[recurrence].label}
+                  </option>
+                ))}
+              </select>
+              <select
+                name="bucket"
+                className={`input-base ${styles.select}`}
+                defaultValue="THIS_WEEK"
+                disabled={isSubmitting || newTaskType === "true"}
+              >
+                {taskBucketOrder.map((bucket) => (
+                  <option key={bucket} value={bucket}>
+                    {taskBucketMeta[bucket].label}
+                  </option>
+                ))}
+              </select>
+              <div className={styles.dateField}>
+                <CalendarDays size={14} />
+                <input
+                  type="date"
+                  name="dueDate"
+                  className={`input-base ${styles.dateInput}`}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <button type="submit" className={styles.primaryBtn} disabled={isSubmitting}>
+                <Plus size={16} /> Add
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      ) : null}
+
+      <div className={styles.fabRow}>
+        <button
+          type="button"
+          className={`${styles.fab} ${showAddForm ? styles.fabOpen : ""}`}
+          onClick={() => setShowAddForm((prev) => !prev)}
+        >
+          {showAddForm ? <X size={22} /> : <Plus size={22} />}
+        </button>
+      </div>
     </div>
   );
 }

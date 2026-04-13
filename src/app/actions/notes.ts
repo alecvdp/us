@@ -17,9 +17,14 @@ export async function getNote() {
 }
 
 export async function updateNote(id: string, content: string) {
-  await prisma.note.update({
-    where: { id },
-    data: { content },
-  });
+  try {
+    await prisma.note.update({
+      where: { id },
+      data: { content },
+    });
+  } catch (err) {
+    console.error("Failed to update note", err);
+    throw new Error("Failed to update note");
+  }
   revalidatePath("/");
 }

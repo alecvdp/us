@@ -91,13 +91,13 @@
 }
 
 .eventBadge {
-  background: rgba(139, 92, 246, 0.15);
-  color: #ddd6fe;
+  background: rgba(212, 148, 107, 0.15);
+  color: var(--accent-light);
 }
 
 .taskBadge {
-  background: rgba(59, 130, 246, 0.14);
-  color: #bfdbfe;
+  background: rgba(123, 159, 191, 0.14);
+  color: #A3C4DB;
 }
 
 .assigneeLabel {
@@ -110,7 +110,7 @@
 
 .deleteBtn:hover {
   opacity: 1;
-  color: #ef4444;
+  color: var(--color-error);
 }
 
 .taskIconWrap {

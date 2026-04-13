@@ -23,20 +23,30 @@ export async function addEvent(formData: FormData) {
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return;
 
-  await prisma.event.create({
-    data: {
-      title,
-      date,
-    },
-  });
+  try {
+    await prisma.event.create({
+      data: {
+        title,
+        date,
+      },
+    });
+  } catch (err) {
+    console.error("Failed to add event", err);
+    throw new Error("Failed to add event");
+  }
 
   revalidatePath("/");
 }
 
 export async function deleteEvent(id: string) {
-  await prisma.event.delete({
-    where: { id },
-  });
+  try {
+    await prisma.event.delete({
+      where: { id },
+    });
+  } catch (err) {
+    console.error("Failed to delete event", err);
+    throw new Error("Failed to delete event");
+  }
 
   revalidatePath("/");
 }

@@ -1,33 +1,34 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { addLink, deleteLink } from "@/app/actions/links";
-import { Plus, Trash2 } from "lucide-react";
+import { addLink, deleteLink, togglePin } from "@/app/actions/links";
+import { Pin, PinOff, Plus, Trash2 } from "lucide-react";
 import styles from "./PastebinWidget.module.css";
 
 type LinkItem = {
   id: string;
   url: string;
   title: string;
-  isStatic: boolean;
+  isPinned: boolean;
+  createdAt: Date;
 };
 
+function daysAgo(date: Date): string {
+  const ms = Date.now() - new Date(date).getTime();
+  const days = Math.floor(ms / 86400000);
+  if (days === 0) return "today";
+  if (days === 1) return "1d ago";
+  return `${days}d ago`;
+}
+
 export default function PastebinWidget({ initialLinks }: { initialLinks: LinkItem[] }) {
-  const [filter, setFilter] = useState<"all" | "static" | "living">("all");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Auto-format links to add https:// if missing
   const formatUrl = (u: string) => {
     if (!u.startsWith("http://") && !u.startsWith("https://")) return `https://${u}`;
     return u;
   };
-
-  const filteredLinks = initialLinks.filter(l => {
-    if (filter === "all") return true;
-    if (filter === "static") return l.isStatic;
-    return !l.isStatic;
-  });
 
   async function handleAdd(formData: FormData) {
     if (isSubmitting) return;
@@ -48,60 +49,47 @@ export default function PastebinWidget({ initialLinks }: { initialLinks: LinkIte
 
   return (
     <div className={styles.container}>
-      <div className={styles.filters}>
-        <button 
-          className={`${styles.filterBtn} ${filter === "all" ? styles.active : ""}`}
-          onClick={() => setFilter("all")}
-        >
-          All
-        </button>
-        <button 
-          className={`${styles.filterBtn} ${filter === "living" ? styles.active : ""}`}
-          onClick={() => setFilter("living")}
-        >
-          Living
-        </button>
-        <button 
-          className={`${styles.filterBtn} ${filter === "static" ? styles.active : ""}`}
-          onClick={() => setFilter("static")}
-        >
-          Static
-        </button>
-      </div>
-
       <div className={styles.linkGrid}>
-        {filteredLinks.length === 0 ? (
+        {initialLinks.length === 0 ? (
           <p className={styles.empty}>No links added yet.</p>
         ) : null}
-        
-        {filteredLinks.map(link => (
-          <div key={link.id} className={styles.linkCard}>
-            <a 
-              href={formatUrl(link.url)} 
-              target="_blank" 
-              rel="noopener noreferrer" 
+
+        {initialLinks.map(link => (
+          <div key={link.id} className={`${styles.linkCard} ${link.isPinned ? styles.pinned : ""}`}>
+            <a
+              href={formatUrl(link.url)}
+              target="_blank"
+              rel="noopener noreferrer"
               className={styles.linkArea}
             >
               <span className={styles.linkTitle}>{link.title}</span>
               <span className={styles.linkUrl}>{link.url}</span>
-              <span className={styles.badge}>{link.isStatic ? "Static" : "Living"}</span>
             </a>
-            <button className={`${styles.deleteBtn} btn-icon`} onClick={() => handleDelete(link.id)}>
-              <Trash2 size={14} />
-            </button>
+            <div className={styles.linkActions}>
+              {!link.isPinned && (
+                <span className={styles.ageLabel}>{daysAgo(link.createdAt)}</span>
+              )}
+              <button
+                className={`${styles.pinBtn} btn-icon`}
+                onClick={() => togglePin(link.id)}
+                title={link.isPinned ? "Unpin" : "Pin"}
+              >
+                {link.isPinned ? <Pin size={14} /> : <PinOff size={14} />}
+              </button>
+              <button className={`${styles.deleteBtn} btn-icon`} onClick={() => handleDelete(link.id)}>
+                <Trash2 size={14} />
+              </button>
+            </div>
           </div>
         ))}
       </div>
 
       <form ref={formRef} action={handleAdd} className={styles.addForm}>
-        <input type="text" name="title" placeholder="Title/Name" className="input-base" required />
+        <input type="text" name="title" placeholder="Title" className="input-base" required />
         <input type="text" name="url" placeholder="URL (e.g. google.com)" className="input-base" required />
-        <select name="isStatic" className={`input-base ${styles.typeSelect}`}>
-          <option value="false">Living</option>
-          <option value="true">Static (Important)</option>
-        </select>
-        <button type="submit" className="btn-icon">
-          <Plus size={20} />
+        <input type="hidden" name="isPinned" value="false" />
+        <button type="submit" className={`${styles.addBtn} btn-icon`} disabled={isSubmitting}>
+          <Plus size={18} />
         </button>
       </form>
     </div>

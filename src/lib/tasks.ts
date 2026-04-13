@@ -32,8 +32,8 @@ export const taskAssigneeMeta: Record<
     accentClass: "alecAccent",
   },
   WIFE: {
-    label: "Wife",
-    avatar: "W",
+    label: "Pau",
+    avatar: "P",
     accentClass: "wifeAccent",
   },
 };

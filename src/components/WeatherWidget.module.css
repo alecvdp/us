@@ -42,9 +42,9 @@
 .badgeHome {
   font-size: 0.65rem;
   text-transform: uppercase;
-  background: rgba(139, 92, 246, 0.2);
-  color: #c4b5fd;
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(212, 148, 107, 0.2);
+  color: var(--accent-light);
+  border: 1px solid rgba(212, 148, 107, 0.3);
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -52,9 +52,9 @@
 .badgeWork {
   font-size: 0.65rem;
   text-transform: uppercase;
-  background: rgba(56, 189, 248, 0.2);
-  color: #bae6fd;
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: rgba(123, 159, 191, 0.2);
+  color: #A3C4DB;
+  border: 1px solid rgba(123, 159, 191, 0.3);
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -88,21 +88,21 @@
 }
 
 .iconSun {
-  color: #fde047;
+  color: #D4AD6B;
 }
 
 .iconCloud {
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .iconRain {
-  color: #38bdf8;
+  color: var(--color-info);
 }
 
 .iconSnow {
-  color: #e2e8f0;
+  color: var(--text-primary);
 }
 
 .iconStorm {
-  color: #818cf8;
+  color: #9B8BBF;
 }

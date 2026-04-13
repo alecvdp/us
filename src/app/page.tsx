@@ -11,6 +11,7 @@ import WhiteboardWidget from "@/components/WhiteboardWidget";
 import PastebinWidget from "@/components/PastebinWidget";
 import EventsWidget from "@/components/EventsWidget";
 import WeatherWidget from "@/components/WeatherWidget";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export default async function Home() {
   const [tasks, note, links, events] = await Promise.all([
@@ -37,8 +38,10 @@ export default async function Home() {
               Tasks & Groceries
             </h2>
           </div>
-          <div className={styles.widgetContent}>
-            <TasksWidget initialTasks={tasks} />
+          <div className={`${styles.widgetContent} ${styles.tasksContent}`}>
+            <ErrorBoundary widgetName="Tasks">
+              <TasksWidget initialTasks={tasks} />
+            </ErrorBoundary>
           </div>
         </div>
 
@@ -50,7 +53,9 @@ export default async function Home() {
             </h2>
           </div>
           <div className={styles.widgetContent}>
-            <WhiteboardWidget initialNote={note} />
+            <ErrorBoundary widgetName="Whiteboard">
+              <WhiteboardWidget initialNote={note} />
+            </ErrorBoundary>
           </div>
         </div>
 
@@ -62,7 +67,9 @@ export default async function Home() {
             </h2>
           </div>
           <div className={styles.widgetContent}>
-            <PastebinWidget initialLinks={links} />
+            <ErrorBoundary widgetName="Pastebin">
+              <PastebinWidget initialLinks={links} />
+            </ErrorBoundary>
           </div>
         </div>
 
@@ -74,7 +81,9 @@ export default async function Home() {
             </h2>
           </div>
           <div className={styles.widgetContent}>
-            <EventsWidget initialEvents={events} initialTasks={tasks} />
+            <ErrorBoundary widgetName="Calendar">
+              <EventsWidget initialEvents={events} initialTasks={tasks} />
+            </ErrorBoundary>
           </div>
         </div>
 
@@ -86,7 +95,9 @@ export default async function Home() {
             </h2>
           </div>
           <div className={styles.widgetContent}>
-            <WeatherWidget />
+            <ErrorBoundary widgetName="Weather">
+              <WeatherWidget />
+            </ErrorBoundary>
           </div>
         </div>
       </main>

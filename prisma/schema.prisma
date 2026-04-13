@@ -27,7 +27,7 @@ model Link {
   id        String   @id @default(uuid())
   url       String
   title     String
-  isStatic  Boolean  @default(false)
+  isPinned  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

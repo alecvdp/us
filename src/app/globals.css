@@ -1,17 +1,23 @@
 :root {
-  --bg-color: #0f111a;
-  --bg-color-secondary: #1a1d29;
-  --text-primary: #f0f2f8;
-  --text-secondary: #94a3b8;
-  --accent-color: #8b5cf6;
-  --accent-hover: #7c3aed;
-  --accent-glow: rgba(139, 92, 246, 0.4);
-  
-  --surface-color: rgba(26, 29, 41, 0.6);
-  --surface-border: rgba(255, 255, 255, 0.08);
-  --surface-hover: rgba(255, 255, 255, 0.05);
+  /* Herstel Warm Dark palette */
+  --bg-color: #1E2127;
+  --bg-color-secondary: #252830;
+  --bg-color-tertiary: #2C303A;
+  --text-primary: #C8C4BE;
+  --text-secondary: #8B8780;
+  --text-faint: #5E5A54;
+  --accent-color: #D4946B;
+  --accent-hover: #C07E55;
+  --accent-glow: rgba(212, 148, 107, 0.35);
 
-  --accent-light: #c4b5fd;
+  --surface-color: rgba(37, 40, 48, 0.6);
+  --surface-border: #383C46;
+  --surface-hover: rgba(255, 255, 255, 0.04);
+
+  --accent-light: #E0B08A;
+  --color-error: #D46B6B;
+  --color-success: #8BAF7B;
+  --color-info: #7B9FBF;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 24px;
@@ -36,9 +42,9 @@
 
 body {
   background-color: var(--bg-color);
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.1), transparent 25%);
+  background-image:
+    radial-gradient(circle at 15% 50%, rgba(212, 148, 107, 0.08), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(123, 159, 191, 0.06), transparent 25%);
   color: var(--text-primary);
   line-height: 1.6;
   font-family: inherit;
