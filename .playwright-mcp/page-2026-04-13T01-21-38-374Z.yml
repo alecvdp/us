@@ -1,0 +1,71 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - heading "Us Dashboard" [level=1] [ref=e4]:
+      - img [ref=e5]
+      - text: Us Dashboard
+  - main [ref=e10]:
+    - generic [ref=e11]:
+      - heading "Tasks & Groceries" [level=2] [ref=e13]:
+        - img [ref=e14]
+        - text: Tasks & Groceries
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - generic [ref=e21]: Show
+            - button "Open" [ref=e22] [cursor=pointer]
+            - button "Done" [ref=e23] [cursor=pointer]
+            - button "All" [ref=e24] [cursor=pointer]
+          - generic [ref=e25]:
+            - generic [ref=e26]: Type
+            - button "Everything" [ref=e27] [cursor=pointer]
+            - button "Tasks" [ref=e28] [cursor=pointer]
+            - button "Groceries" [ref=e29] [cursor=pointer]
+        - paragraph [ref=e30]: Nothing here right now.
+        - button [ref=e32] [cursor=pointer]:
+          - img [ref=e33]
+    - generic [ref=e34]:
+      - heading "Whiteboard" [level=2] [ref=e36]:
+        - img [ref=e37]
+        - text: Whiteboard
+      - generic [ref=e40]:
+        - generic [ref=e42]:
+          - img [ref=e43]
+          - text: Saved
+        - textbox "Drop some notes here..." [ref=e47]
+    - generic [ref=e48]:
+      - heading "Pastebin" [level=2] [ref=e50]:
+        - img [ref=e51]
+        - text: Pastebin
+      - generic [ref=e55]:
+        - generic [ref=e56]:
+          - button "All" [ref=e57] [cursor=pointer]
+          - button "Living" [ref=e58] [cursor=pointer]
+          - button "Static" [ref=e59] [cursor=pointer]
+        - paragraph [ref=e61]: No links added yet.
+        - generic [ref=e62]:
+          - textbox "Title/Name" [ref=e63]
+          - textbox "URL (e.g. google.com)" [ref=e64]
+          - combobox [ref=e65]:
+            - option "Living" [selected]
+            - option "Static (Important)"
+          - button [ref=e66] [cursor=pointer]:
+            - img [ref=e67]
+    - generic [ref=e68]:
+      - heading "Calendar & Agenda" [level=2] [ref=e70]:
+        - img [ref=e71]
+        - text: Calendar & Agenda
+      - generic [ref=e74]:
+        - paragraph [ref=e76]: No upcoming events or due tasks
+        - generic [ref=e77]:
+          - textbox "Event name" [ref=e78]
+          - textbox [ref=e79]
+          - button [ref=e80] [cursor=pointer]:
+            - img [ref=e81]
+            - img [ref=e83]
+    - generic [ref=e84]:
+      - heading "Weather" [level=2] [ref=e86]:
+        - img [ref=e87]
+        - text: Weather
+      - generic [ref=e93]:
+        - img [ref=e94]
+        - text: Loading weather...

@@ -1,0 +1,118 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - heading "Us Dashboard" [level=1] [ref=e4]:
+        - img [ref=e5]
+        - text: Us Dashboard
+    - main [ref=e10]:
+      - generic [ref=e11]:
+        - heading "Tasks & Groceries" [level=2] [ref=e13]:
+          - img [ref=e14]
+          - text: Tasks & Groceries
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - generic [ref=e20]:
+              - generic [ref=e21]: Show
+              - button "Open" [ref=e22] [cursor=pointer]
+              - button "Done" [ref=e23] [cursor=pointer]
+              - button "All" [ref=e24] [cursor=pointer]
+            - generic [ref=e25]:
+              - generic [ref=e26]: Type
+              - button "Everything" [ref=e27] [cursor=pointer]
+              - button "Tasks" [ref=e28] [cursor=pointer]
+              - button "Groceries" [ref=e29] [cursor=pointer]
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - img [ref=e33]
+              - heading "This Week" [level=4] [ref=e35]
+              - generic [ref=e36]: "1"
+            - list [ref=e37]:
+              - listitem [ref=e38]:
+                - button [ref=e39] [cursor=pointer]
+                - generic [ref=e40]:
+                  - generic [ref=e41]: Show Pau this dashboard
+                  - generic [ref=e42]: Alec
+                - generic [ref=e43]:
+                  - generic "Daily" [ref=e44]:
+                    - img [ref=e45]
+                  - generic [ref=e50]:
+                    - img [ref=e51]
+                    - text: today
+                - generic [ref=e53]:
+                  - button [ref=e54] [cursor=pointer]:
+                    - img [ref=e55]
+                  - button [ref=e58] [cursor=pointer]:
+                    - img [ref=e59]
+          - button [ref=e63] [cursor=pointer]:
+            - img [ref=e64]
+      - generic [ref=e65]:
+        - heading "Whiteboard" [level=2] [ref=e67]:
+          - img [ref=e68]
+          - text: Whiteboard
+        - generic [ref=e71]:
+          - generic [ref=e73]:
+            - img [ref=e74]
+            - text: Saved
+          - textbox "Drop some notes here..." [ref=e78]
+      - generic [ref=e79]:
+        - heading "Pastebin" [level=2] [ref=e81]:
+          - img [ref=e82]
+          - text: Pastebin
+        - generic [ref=e86]:
+          - generic [ref=e87]:
+            - generic [ref=e88]:
+              - link "Chase.com https://chase.com" [ref=e89] [cursor=pointer]:
+                - /url: https://chase.com
+                - generic [ref=e90]: Chase.com
+                - generic [ref=e91]: https://chase.com
+              - generic [ref=e92]:
+                - button "Unpin" [ref=e93] [cursor=pointer]:
+                  - img [ref=e94]
+                - button [ref=e96] [cursor=pointer]:
+                  - img [ref=e97]
+            - generic [ref=e100]:
+              - link "Medieval Times https://www.medievaltimes.com/" [ref=e101] [cursor=pointer]:
+                - /url: https://www.medievaltimes.com/
+                - generic [ref=e102]: Medieval Times
+                - generic [ref=e103]: https://www.medievaltimes.com/
+              - generic [ref=e104]:
+                - generic [ref=e105]: today
+                - button "Pin" [ref=e106] [cursor=pointer]:
+                  - img [ref=e107]
+                - button [ref=e111] [cursor=pointer]:
+                  - img [ref=e112]
+          - generic [ref=e115]:
+            - textbox "Title" [ref=e116]
+            - textbox "URL (e.g. google.com)" [ref=e117]
+            - button [ref=e118] [cursor=pointer]:
+              - img [ref=e119]
+      - generic [ref=e120]:
+        - heading "Calendar & Agenda" [level=2] [ref=e122]:
+          - img [ref=e123]
+          - text: Calendar & Agenda
+        - generic [ref=e126]:
+          - generic [ref=e128]:
+            - generic [ref=e129]:
+              - generic [ref=e130]: Apr
+              - generic [ref=e131]: "12"
+            - generic [ref=e132]:
+              - generic [ref=e133]:
+                - generic [ref=e134]: Show Pau this dashboard
+                - generic [ref=e135]: Task
+              - generic [ref=e136]: Sun, Apr 12 · Today · Alec
+            - img [ref=e138]
+          - generic [ref=e141]:
+            - textbox "Event name" [ref=e142]
+            - textbox [ref=e143]
+            - button [ref=e144] [cursor=pointer]:
+              - img [ref=e145]
+              - img [ref=e147]
+      - generic [ref=e148]:
+        - heading "Weather" [level=2] [ref=e150]:
+          - img [ref=e151]
+          - text: Weather
+        - generic [ref=e157]:
+          - img [ref=e158]
+          - text: Loading weather...
+  - button "Open Next.js Dev Tools" [ref=e165] [cursor=pointer]:
+    - img [ref=e166]

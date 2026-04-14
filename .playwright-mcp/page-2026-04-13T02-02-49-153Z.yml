@@ -1,0 +1,104 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - heading "Us Dashboard" [level=1] [ref=e4]:
+        - img [ref=e5]
+        - text: Us Dashboard
+    - main [ref=e10]:
+      - generic [ref=e11]:
+        - heading "Tasks & Groceries" [level=2] [ref=e13]:
+          - img [ref=e14]
+          - text: Tasks & Groceries
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - generic [ref=e20]:
+              - generic [ref=e21]: Show
+              - button "Open" [ref=e22] [cursor=pointer]
+              - button "Done" [ref=e23] [cursor=pointer]
+              - button "All" [ref=e24] [cursor=pointer]
+            - generic [ref=e25]:
+              - generic [ref=e26]: Type
+              - button "Everything" [ref=e27] [cursor=pointer]
+              - button "Tasks" [ref=e28] [cursor=pointer]
+              - button "Groceries" [ref=e29] [cursor=pointer]
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - img [ref=e33]
+              - heading "This Week" [level=4] [ref=e35]
+              - generic [ref=e36]: "1"
+            - list [ref=e37]:
+              - listitem [ref=e38]:
+                - button [ref=e39] [cursor=pointer]
+                - generic [ref=e40]:
+                  - generic [ref=e41]: Show Pau this dashboard
+                  - generic [ref=e42]: Alec
+                - generic [ref=e43]:
+                  - generic "Daily" [ref=e44]:
+                    - img [ref=e45]
+                  - generic [ref=e50]:
+                    - img [ref=e51]
+                    - text: today
+                - generic [ref=e53]:
+                  - button [ref=e54] [cursor=pointer]:
+                    - img [ref=e55]
+                  - button [ref=e58] [cursor=pointer]:
+                    - img [ref=e59]
+          - button [ref=e63] [cursor=pointer]:
+            - img [ref=e64]
+      - generic [ref=e65]:
+        - heading "Whiteboard" [level=2] [ref=e67]:
+          - img [ref=e68]
+          - text: Whiteboard
+        - generic [ref=e71]:
+          - generic [ref=e73]:
+            - img [ref=e74]
+            - text: Saved
+          - textbox "Drop some notes here..." [ref=e78]
+      - generic [ref=e79]:
+        - heading "Pastebin" [level=2] [ref=e81]:
+          - img [ref=e82]
+          - text: Pastebin
+        - generic [ref=e86]:
+          - generic [ref=e87]:
+            - button "All" [ref=e88] [cursor=pointer]
+            - button "Living" [ref=e89] [cursor=pointer]
+            - button "Static" [ref=e90] [cursor=pointer]
+          - paragraph [ref=e92]: No links added yet.
+          - generic [ref=e93]:
+            - textbox "Title/Name" [ref=e94]
+            - textbox "URL (e.g. google.com)" [ref=e95]
+            - combobox [ref=e96]:
+              - option "Living" [selected]
+              - option "Static (Important)"
+            - button [ref=e97] [cursor=pointer]:
+              - img [ref=e98]
+      - generic [ref=e99]:
+        - heading "Calendar & Agenda" [level=2] [ref=e101]:
+          - img [ref=e102]
+          - text: Calendar & Agenda
+        - generic [ref=e105]:
+          - generic [ref=e107]:
+            - generic [ref=e108]:
+              - generic [ref=e109]: Apr
+              - generic [ref=e110]: "12"
+            - generic [ref=e111]:
+              - generic [ref=e112]:
+                - generic [ref=e113]: Show Pau this dashboard
+                - generic [ref=e114]: Task
+              - generic [ref=e115]: Sun, Apr 12 · Today · Alec
+            - img [ref=e117]
+          - generic [ref=e120]:
+            - textbox "Event name" [ref=e121]
+            - textbox [ref=e122]
+            - button [ref=e123] [cursor=pointer]:
+              - img [ref=e124]
+              - img [ref=e126]
+      - generic [ref=e127]:
+        - heading "Weather" [level=2] [ref=e129]:
+          - img [ref=e130]
+          - text: Weather
+        - generic [ref=e136]:
+          - img [ref=e137]
+          - text: Loading weather...
+  - button "Open Next.js Dev Tools" [ref=e144] [cursor=pointer]:
+    - img [ref=e145]

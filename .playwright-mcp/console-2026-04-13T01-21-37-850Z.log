@@ -1,0 +1,89 @@
+[     252ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[     388ms] [LOG] [HMR] connected @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  387186ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  387256ms] [LOG] [Fast Refresh] done in 16ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  400740ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  400769ms] [LOG] [Fast Refresh] done in 22ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  483443ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  484485ms] [LOG] [Fast Refresh] done in 95ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  484588ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  485227ms] [LOG] [Fast Refresh] done in 740ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  485359ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  485880ms] [LOG] [Fast Refresh] done in 621ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  485883ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3003/?_rsc=wnywt:0
+[  485893ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3003/:0
+[  486804ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3003/_next/static/chunks/node_modules_react-dom_0bruynb._.js:15305
+[  486918ms] ReferenceError: Inter is not defined
+    at module evaluation (file:///home/alec/git/us/.next/dev/server/chunks/ssr/_00wjli3._.js:14:15)
+    at <unknown> (file:///home/alec/git/us/.next/dev/server/chunks/ssr/[turbopack]_runtime.js:1291:27)
+    at runWithHooks (file:///home/alec/git/us/.next/dev/server/chunks/ssr/[turbopack]_runtime.js:1554:9)
+    at instantiateModuleShared (file:///home/alec/git/us/.next/dev/server/chunks/ssr/[turbopack]_runtime.js:1289:9)
+    at instantiateModule (file:///home/alec/git/us/.next/dev/server/chunks/ssr/[turbopack]_runtime.js:1557:23)
+    at getOrInstantiateModuleFromParent (file:///home/alec/git/us/.next/dev/server/chunks/ssr/[turbopack]_runtime.js:1593:23)
+    at Context.esmImport [as i] (file:///home/alec/git/us/.next/dev/server/chunks/ssr/[turbopack]_runtime.js:281:20)
+    at module evaluation (file:///home/alec/git/us/.next/dev/server/chunks/ssr/_00wjli3._.js:50:47)
+    at <unknown> (file:///home/alec/git/us/.next/dev/server/chunks/ssr/[turbopack]_runtime.js:1291:27)
+    at runWithHooks (file:///home/alec/git/us/.next/dev/server/chunks/ssr/[turbopack]_runtime.js:1554:9)
+    at instantiateModuleShared (file:///home/alec/git/us/.next/dev/server/chunks/ssr/[turbopack]_runtime.js:1289:9)
+    at instantiateModule (file:///home/alec/git/us/.next/dev/server/chunks/ssr/[turbopack]_runtime.js:1557:23)
+    at getOrInstantiateModuleFromParent (file:///home/alec/git/us/.next/dev/server/chunks/ssr/[turbopack]_runtime.js:1593:23)
+    at Context.commonJsRequire [as r] (file:///home/alec/git/us/.next/dev/server/chunks/ssr/[turbopack]_runtime.js:302:12)
+    at Array.__TURBOPACK__layout__$23$1__ (file:///home/alec/git/us/.next/dev/server/chunks/ssr/node_modules_0r~2xqn._.js:3938:64)
+    at getLayoutOrPageModule (file:///home/alec/git/us/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.dev.js:65:6301)
+    at anySegmentHasRuntimePrefetchEnabled (file:///home/alec/git/us/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.dev.js:69:16674)
+    at generateDynamicRSCPayload (file:///home/alec/git/us/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.dev.js:69:23010)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_context_frame:63:14)
+    at generateDynamicFlightRenderResult (file:///home/alec/git/us/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.dev.js:69:26366)
+    at renderToHTMLOrFlightImpl (file:///home/alec/git/us/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.dev.js:69:55477)
+[  486918ms] [LOG] [HMR] connected @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_0u_w_5s._.js:1226
+[  487054ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_0u_w_5s._.js:1226
+[  487069ms] [LOG] [Fast Refresh] done in 115ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_0u_w_5s._.js:1226
+[  487171ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_0u_w_5s._.js:1226
+[  487202ms] [LOG] [Fast Refresh] done in 130ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_0u_w_5s._.js:1226
+[  487864ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_0u_w_5s._.js:1226
+[  488469ms] [LOG] [Fast Refresh] done in 631ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_0u_w_5s._.js:1226
+[  488591ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3003/:0
+[  488682ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  488722ms] [LOG] [HMR] connected @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  488780ms] ReferenceError: inter is not defined
+    at RootLayout (about://React/Server/file:///home/alec/git/us/.next/dev/server/chunks/ssr/%5Broot-of-the-server%5D__079adyo._.js?0:51:24)
+    at resolveErrorDev (http://localhost:3003/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:1919:105)
+    at processFullStringRow (http://localhost:3003/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2434:29)
+    at processFullBinaryRow (http://localhost:3003/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2393:9)
+    at processBinaryChunk (http://localhost:3003/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2502:221)
+    at progress (http://localhost:3003/_next/static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_0p3wegg._.js:2689:13)
+[  491569ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  491614ms] [LOG] [Fast Refresh] done in 17ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  491751ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  491776ms] [LOG] [HMR] connected @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  504304ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  504333ms] [LOG] [Fast Refresh] done in 26ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  509086ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  509115ms] [LOG] [Fast Refresh] done in 8ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  513779ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  513806ms] [LOG] [Fast Refresh] done in 9ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  518300ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  518329ms] [LOG] [Fast Refresh] done in 8ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  524122ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  524151ms] [LOG] [Fast Refresh] done in 24ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  531080ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  531109ms] [LOG] [Fast Refresh] done in 7ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  541123ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  541151ms] [LOG] [Fast Refresh] done in 9ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  550161ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  550189ms] [LOG] [Fast Refresh] done in 27ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  554937ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  554965ms] [LOG] [Fast Refresh] done in 24ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  559679ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  559709ms] [LOG] [Fast Refresh] done in 26ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  568271ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  568299ms] [LOG] [Fast Refresh] done in 24ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2443535ms] [ERROR] WebSocket connection to 'ws://localhost:3003/_next/webpack-hmr?id=AhVw-D89o-z0Yaa33Ohh5' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js:13299
+[ 2444537ms] [ERROR] WebSocket connection to 'ws://localhost:3003/_next/webpack-hmr?id=AhVw-D89o-z0Yaa33Ohh5' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js:13299
+[ 2445539ms] [ERROR] WebSocket connection to 'ws://localhost:3003/_next/webpack-hmr?id=AhVw-D89o-z0Yaa33Ohh5' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js:13299
+[ 2446541ms] [ERROR] WebSocket connection to 'ws://localhost:3003/_next/webpack-hmr?id=AhVw-D89o-z0Yaa33Ohh5' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js:13299
+[ 2447546ms] [ERROR] WebSocket connection to 'ws://localhost:3003/_next/webpack-hmr?id=AhVw-D89o-z0Yaa33Ohh5' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js:13299
+[ 2452549ms] [ERROR] WebSocket connection to 'ws://localhost:3003/_next/webpack-hmr?id=AhVw-D89o-z0Yaa33Ohh5' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js:13299
+[ 2457558ms] [LOG] [HMR] connected @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2458322ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2458354ms] [LOG] [HMR] connected @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
