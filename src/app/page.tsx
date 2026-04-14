@@ -2,7 +2,7 @@ import { CloudSun, LayoutDashboard, ListTodo, Calendar, Link as LinkIcon, Edit3 
 import styles from "./page.module.css";
 
 import { getTasks } from "@/app/actions/tasks";
-import { getNote } from "@/app/actions/notes";
+import { getNotes } from "@/app/actions/notes";
 import { getLinks } from "@/app/actions/links";
 import { getEvents } from "@/app/actions/events";
 
@@ -15,9 +15,9 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import AutoRefresh from "@/components/AutoRefresh";
 
 export default async function Home() {
-  const [tasks, note, links, events] = await Promise.all([
+  const [tasks, notes, links, events] = await Promise.all([
     getTasks(),
-    getNote(),
+    getNotes(),
     getLinks(),
     getEvents(),
   ]);
@@ -51,12 +51,12 @@ export default async function Home() {
           <div className={styles.widgetHeader}>
             <h2 className={styles.widgetTitle}>
               <Edit3 size={20} />
-              Whiteboard
+              Notes
             </h2>
           </div>
           <div className={styles.widgetContent}>
             <ErrorBoundary widgetName="Whiteboard">
-              <WhiteboardWidget initialNote={note} />
+              <WhiteboardWidget initialNotes={notes} />
             </ErrorBoundary>
           </div>
         </div>
