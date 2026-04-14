@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { addLink, deleteLink, togglePin } from "@/app/actions/links";
 import { Pin, PinOff, Plus, Trash2 } from "lucide-react";
+import ConfirmDialog from "./ConfirmDialog";
 import styles from "./PastebinWidget.module.css";
 
 type LinkItem = {
@@ -23,6 +24,7 @@ function daysAgo(date: Date): string {
 
 export default function PastebinWidget({ initialLinks }: { initialLinks: LinkItem[] }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   const formatUrl = (u: string) => {
@@ -41,11 +43,12 @@ export default function PastebinWidget({ initialLinks }: { initialLinks: LinkIte
     }
   }
 
-  async function handleDelete(id: string) {
-    if (confirm("Delete this link?")) {
-      await deleteLink(id);
+  const handleConfirmDelete = useCallback(async () => {
+    if (deleteTarget) {
+      await deleteLink(deleteTarget);
+      setDeleteTarget(null);
     }
-  }
+  }, [deleteTarget]);
 
   return (
     <div className={styles.container}>
@@ -76,7 +79,7 @@ export default function PastebinWidget({ initialLinks }: { initialLinks: LinkIte
               >
                 {link.isPinned ? <Pin size={14} /> : <PinOff size={14} />}
               </button>
-              <button className={`${styles.deleteBtn} btn-icon`} onClick={() => handleDelete(link.id)}>
+              <button className={`${styles.deleteBtn} btn-icon`} onClick={() => setDeleteTarget(link.id)}>
                 <Trash2 size={14} />
               </button>
             </div>
@@ -92,6 +95,14 @@ export default function PastebinWidget({ initialLinks }: { initialLinks: LinkIte
           <Plus size={18} />
         </button>
       </form>
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete link"
+        message="This link will be permanently removed."
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { addEvent, deleteEvent } from "@/app/actions/events";
 import { CalendarDays, CheckSquare2, Plus, Trash2 } from "lucide-react";
+import ConfirmDialog from "./ConfirmDialog";
 import styles from "./EventsWidget.module.css";
 import { taskAssigneeMeta, type TaskAssignee } from "@/lib/tasks";
 
@@ -43,6 +44,7 @@ export default function EventsWidget({
   initialTasks: TaskItem[];
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   async function handleAdd(formData: FormData) {
@@ -56,11 +58,12 @@ export default function EventsWidget({
     }
   }
 
-  async function handleDelete(id: string) {
-    if (confirm("Delete this event?")) {
-      await deleteEvent(id);
+  const handleConfirmDelete = useCallback(async () => {
+    if (deleteTarget) {
+      await deleteEvent(deleteTarget);
+      setDeleteTarget(null);
     }
-  }
+  }, [deleteTarget]);
 
   const formatEventDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -132,7 +135,7 @@ export default function EventsWidget({
               </span>
             </div>
             {item.kind === "event" ? (
-              <button className={`${styles.deleteBtn} btn-icon`} onClick={() => handleDelete(item.id)}>
+              <button className={`${styles.deleteBtn} btn-icon`} onClick={() => setDeleteTarget(item.id)}>
                 <Trash2 size={14} />
               </button>
             ) : (
@@ -152,6 +155,14 @@ export default function EventsWidget({
           <Plus size={16} />
         </button>
       </form>
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete event"
+        message="This event will be permanently removed."
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }
