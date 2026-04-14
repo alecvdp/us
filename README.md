@@ -91,7 +91,7 @@ Open `http://localhost:3000`.
 Each task supports:
 
 - `title`
-- `assignee`: `SHARED | ALEC | WIFE`
+- `assignee`: `SHARED | ALEC | PAU`
 - `priority`: `LOW | MEDIUM | HIGH`
 - `bucket`: `TODAY | THIS_WEEK | RECURRING | LATER`
 - `recurrence`: `NONE | DAILY | WEEKLY | MONTHLY`

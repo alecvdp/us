@@ -1,4 +1,4 @@
-export const taskAssigneeOrder = ["SHARED", "ALEC", "WIFE"] as const;
+export const taskAssigneeOrder = ["SHARED", "ALEC", "PAU"] as const;
 export type TaskAssignee = (typeof taskAssigneeOrder)[number];
 const validAssignees = new Set<TaskAssignee>(taskAssigneeOrder);
 
@@ -31,10 +31,10 @@ export const taskAssigneeMeta: Record<
     avatar: "A",
     accentClass: "alecAccent",
   },
-  WIFE: {
+  PAU: {
     label: "Pau",
     avatar: "P",
-    accentClass: "wifeAccent",
+    accentClass: "pauAccent",
   },
 };
 
