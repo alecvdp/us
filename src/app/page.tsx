@@ -12,6 +12,7 @@ import PastebinWidget from "@/components/PastebinWidget";
 import EventsWidget from "@/components/EventsWidget";
 import WeatherWidget from "@/components/WeatherWidget";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import AutoRefresh from "@/components/AutoRefresh";
 
 export default async function Home() {
   const [tasks, note, links, events] = await Promise.all([
@@ -23,6 +24,7 @@ export default async function Home() {
 
   return (
     <>
+      <AutoRefresh />
       <header className={styles.header}>
         <h1 className={styles.headerTitle}>
           <LayoutDashboard size={32} />
