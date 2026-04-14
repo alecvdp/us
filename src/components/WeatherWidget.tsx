@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./WeatherWidget.module.css";
-import { AlertTriangle, Cloud, CloudRain, Sun, CloudLightning, CloudSnow, Loader2 } from "lucide-react";
-import { WEATHER_LOCATIONS } from "@/lib/weather";
+import { AlertTriangle, Cloud, CloudRain, Sun, CloudLightning, CloudSnow, Loader2, Plus, Settings, Trash2, X } from "lucide-react";
+import { addWeatherLocation, deleteWeatherLocation } from "@/app/actions/weather";
+
+type LocationItem = {
+  id: string;
+  name: string;
+  badge: string;
+  latitude: number;
+  longitude: number;
+};
 
 type WeatherData = {
   temp: number;
@@ -36,18 +44,26 @@ const badgeClassMap: Record<string, string> = {
   Work: styles.badgeWork,
 };
 
-export default function WeatherWidget() {
+export default function WeatherWidget({ initialLocations }: { initialLocations: LocationItem[] }) {
   const [weatherData, setWeatherData] = useState<(WeatherData | null)[]>(
-    () => WEATHER_LOCATIONS.map(() => null)
+    () => initialLocations.map(() => null)
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
+    if (initialLocations.length === 0) {
+      setLoading(false);
+      return;
+    }
+
     async function fetchWeather() {
       try {
         const responses = await Promise.all(
-          WEATHER_LOCATIONS.map((loc) =>
+          initialLocations.map((loc) =>
             fetch(
               `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current_weather=true&temperature_unit=fahrenheit`
             )
@@ -74,13 +90,30 @@ export default function WeatherWidget() {
     fetchWeather();
     const interval = setInterval(fetchWeather, 30 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [initialLocations]);
+
+  async function handleAdd(formData: FormData) {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      await addWeatherLocation(formData);
+      formRef.current?.reset();
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    if (confirm("Remove this weather location?")) {
+      await deleteWeatherLocation(id);
+    }
+  }
 
   if (loading) {
     return <div className={styles.loader}><Loader2 className="lucide-spin" /> Loading weather...</div>;
   }
 
-  if (error && weatherData.every((d) => d === null)) {
+  if (!editing && error && weatherData.every((d) => d === null)) {
     return (
       <div className={styles.loader}>
         <AlertTriangle size={18} /> Unable to load weather data.
@@ -90,30 +123,67 @@ export default function WeatherWidget() {
 
   return (
     <div className={styles.container}>
-      {WEATHER_LOCATIONS.map((location, i) => {
+      {initialLocations.map((location, i) => {
         const data = weatherData[i];
         return (
-          <div key={location.name} className={styles.locationCard}>
+          <div key={location.id} className={styles.locationCard}>
             <div className={styles.cardHeader}>
               <span className={styles.city}>{location.name}</span>
-              <span className={badgeClassMap[location.badge] ?? styles.badgeWork}>
-                {location.badge}
-              </span>
-            </div>
-            <div className={styles.weatherBody}>
-              <div className={styles.iconWrapper}>
-                {data ? getWeatherIcon(data.conditionCode, 36) : <Cloud />}
-              </div>
-              <div className={styles.tempWrapper}>
-                <span className={styles.temp}>{data?.temp ?? "--"}&deg;</span>
-                <span className={styles.desc}>
-                  {data ? getWeatherDesc(data.conditionCode) : "--"}
+              <div className={styles.cardHeaderRight}>
+                <span className={badgeClassMap[location.badge] ?? styles.badgeWork}>
+                  {location.badge}
                 </span>
+                {editing && (
+                  <button
+                    className={`${styles.deleteBtn} btn-icon`}
+                    onClick={() => handleDelete(location.id)}
+                    title="Remove location"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
               </div>
             </div>
+            {!editing && (
+              <div className={styles.weatherBody}>
+                <div className={styles.iconWrapper}>
+                  {data ? getWeatherIcon(data.conditionCode, 36) : <Cloud />}
+                </div>
+                <div className={styles.tempWrapper}>
+                  <span className={styles.temp}>{data?.temp ?? "--"}&deg;</span>
+                  <span className={styles.desc}>
+                    {data ? getWeatherDesc(data.conditionCode) : "--"}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         );
       })}
+
+      {editing && (
+        <form ref={formRef} action={handleAdd} className={styles.addForm}>
+          <input type="text" name="name" placeholder="City, State" className="input-base" required />
+          <input type="text" name="badge" placeholder="Badge (e.g. Home)" className="input-base" required />
+          <input type="text" name="latitude" placeholder="Latitude" className="input-base" required />
+          <input type="text" name="longitude" placeholder="Longitude" className="input-base" required />
+          <button type="submit" className={`${styles.addBtn} btn-icon`} disabled={isSubmitting}>
+            <Plus size={18} />
+          </button>
+        </form>
+      )}
+
+      {initialLocations.length === 0 && !editing && (
+        <p className={styles.empty}>No weather locations configured.</p>
+      )}
+
+      <button
+        className={`${styles.editToggle} btn-icon`}
+        onClick={() => setEditing(!editing)}
+        title={editing ? "Done editing" : "Manage locations"}
+      >
+        {editing ? <X size={16} /> : <Settings size={16} />}
+      </button>
     </div>
   );
 }
