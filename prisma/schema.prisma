@@ -47,3 +47,14 @@ model Event {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model WeatherLocation {
+  id        String   @id @default(uuid())
+  name      String
+  badge     String
+  latitude  Float
+  longitude Float
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -106,3 +106,58 @@
 .iconStorm {
   color: #9B8BBF;
 }
+
+.cardHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.deleteBtn {
+  color: var(--text-secondary);
+  opacity: 0.6;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.deleteBtn:hover {
+  opacity: 1;
+  color: var(--color-error);
+}
+
+.addForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xs);
+  padding-top: var(--spacing-xs);
+}
+
+.addForm input[name="name"],
+.addForm input[name="badge"] {
+  grid-column: span 1;
+}
+
+.addBtn {
+  grid-column: 1 / -1;
+  justify-self: end;
+  color: var(--accent);
+}
+
+.editToggle {
+  position: absolute;
+  bottom: var(--spacing-xs);
+  right: var(--spacing-xs);
+  color: var(--text-secondary);
+  opacity: 0.4;
+  transition: opacity 0.15s;
+}
+
+.editToggle:hover {
+  opacity: 1;
+}
+
+.empty {
+  color: var(--text-secondary);
+  text-align: center;
+  padding: var(--spacing-md);
+  font-size: 0.85rem;
+}

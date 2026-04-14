@@ -5,6 +5,7 @@ import { getTasks } from "@/app/actions/tasks";
 import { getNotes } from "@/app/actions/notes";
 import { getLinks } from "@/app/actions/links";
 import { getEvents } from "@/app/actions/events";
+import { getWeatherLocations } from "@/app/actions/weather";
 
 import TasksWidget from "@/components/TasksWidget";
 import WhiteboardWidget from "@/components/WhiteboardWidget";
@@ -15,11 +16,12 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import AutoRefresh from "@/components/AutoRefresh";
 
 export default async function Home() {
-  const [tasks, notes, links, events] = await Promise.all([
+  const [tasks, notes, links, events, weatherLocations] = await Promise.all([
     getTasks(),
     getNotes(),
     getLinks(),
     getEvents(),
+    getWeatherLocations(),
   ]);
 
   return (
@@ -98,7 +100,7 @@ export default async function Home() {
           </div>
           <div className={styles.widgetContent}>
             <ErrorBoundary widgetName="Weather">
-              <WeatherWidget />
+              <WeatherWidget initialLocations={weatherLocations} />
             </ErrorBoundary>
           </div>
         </div>
