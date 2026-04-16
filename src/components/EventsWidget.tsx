@@ -5,6 +5,7 @@ import { addEvent, deleteEvent } from "@/app/actions/events";
 import { CalendarDays, CheckSquare2, Plus, Trash2 } from "lucide-react";
 import ConfirmDialog from "./ConfirmDialog";
 import styles from "./EventsWidget.module.css";
+import { daysUntilCalendarDate } from "@/lib/dates";
 import { taskAssigneeMeta, type TaskAssignee } from "@/lib/tasks";
 
 type EventItem = {
@@ -86,13 +87,11 @@ export default function EventsWidget({
   };
 
   const getDaysUntil = (date: Date) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const eventDate = new Date(date);
-    eventDate.setHours(0, 0, 0, 0);
-    const diffTime = Math.abs(eventDate.getTime() - today.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-    
+    const diffDays = daysUntilCalendarDate(date);
+    if (diffDays < 0) {
+      const past = Math.abs(diffDays);
+      return past === 1 ? "Yesterday" : `${past} days ago`;
+    }
     if (diffDays === 0) return "Today";
     if (diffDays === 1) return "Tomorrow";
     return `In ${diffDays} days`;

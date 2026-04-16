@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { normalizeExternalUrl } from "@/lib/url";
 
 const EXPIRY_DAYS = 7;
 
@@ -23,11 +24,14 @@ export async function getLinks() {
 }
 
 export async function addLink(formData: FormData) {
-  const url = formData.get("url")?.toString();
-  const title = formData.get("title")?.toString();
+  const rawUrl = formData.get("url")?.toString();
+  const title = formData.get("title")?.toString()?.trim();
   const isPinned = formData.get("isPinned") === "true";
 
-  if (!url || !title) return;
+  if (!rawUrl || !title) return;
+
+  const url = normalizeExternalUrl(rawUrl);
+  if (!url) return;
 
   try {
     await prisma.link.create({

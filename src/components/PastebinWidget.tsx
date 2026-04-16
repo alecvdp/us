@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { addLink, deleteLink, togglePin } from "@/app/actions/links";
 import { Pin, PinOff, Plus, Trash2 } from "lucide-react";
 import ConfirmDialog from "./ConfirmDialog";
+import { normalizeExternalUrl } from "@/lib/url";
 import styles from "./PastebinWidget.module.css";
 
 type LinkItem = {
@@ -27,10 +28,10 @@ export default function PastebinWidget({ initialLinks }: { initialLinks: LinkIte
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const formatUrl = (u: string) => {
-    if (!u.startsWith("http://") && !u.startsWith("https://")) return `https://${u}`;
-    return u;
-  };
+  // Already-stored URLs went through normalizeExternalUrl on the server, but
+  // anything pre-allowlist may be a bare hostname — re-normalize defensively
+  // and fall back to "#" if the value somehow isn't http/https-shaped.
+  const safeHref = (u: string) => normalizeExternalUrl(u) ?? "#";
 
   async function handleAdd(formData: FormData) {
     if (isSubmitting) return;
@@ -60,7 +61,7 @@ export default function PastebinWidget({ initialLinks }: { initialLinks: LinkIte
         {initialLinks.map(link => (
           <div key={link.id} className={`${styles.linkCard} ${link.isPinned ? styles.pinned : ""}`}>
             <a
-              href={formatUrl(link.url)}
+              href={safeHref(link.url)}
               target="_blank"
               rel="noopener noreferrer"
               className={styles.linkArea}

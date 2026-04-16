@@ -3,6 +3,7 @@
 import type { Task as PrismaTask } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { addCalendarDays, addCalendarMonths, parseCalendarDate } from "@/lib/dates";
 import {
   normalizeTaskAssignee,
   normalizeTaskBucket,
@@ -36,10 +37,7 @@ function parseRecurrence(value: string): TaskRecurrence {
 }
 
 function parseDueDate(value: string | null | undefined) {
-  if (!value) return null;
-
-  const parsed = new Date(`${value}T12:00:00`);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
+  return parseCalendarDate(value);
 }
 
 function getSectionUpdate(section: TaskSection) {
@@ -51,57 +49,34 @@ function getSectionUpdate(section: TaskSection) {
 }
 
 function addInterval(date: Date, recurrence: TaskRecurrence) {
-  const next = new Date(date);
-
-  if (recurrence === "DAILY") {
-    next.setDate(next.getDate() + 1);
-  } else if (recurrence === "WEEKLY") {
-    next.setDate(next.getDate() + 7);
-  } else if (recurrence === "MONTHLY") {
-    next.setMonth(next.getMonth() + 1);
-  }
-
-  return next;
+  if (recurrence === "DAILY") return addCalendarDays(date, 1);
+  if (recurrence === "WEEKLY") return addCalendarDays(date, 7);
+  if (recurrence === "MONTHLY") return addCalendarMonths(date, 1);
+  return new Date(date);
 }
 
 function subtractInterval(date: Date, recurrence: TaskRecurrence) {
-  const previous = new Date(date);
-
-  if (recurrence === "DAILY") {
-    previous.setDate(previous.getDate() - 1);
-  } else if (recurrence === "WEEKLY") {
-    previous.setDate(previous.getDate() - 7);
-  } else if (recurrence === "MONTHLY") {
-    previous.setMonth(previous.getMonth() - 1);
-  }
-
-  return previous;
+  if (recurrence === "DAILY") return addCalendarDays(date, -1);
+  if (recurrence === "WEEKLY") return addCalendarDays(date, -7);
+  if (recurrence === "MONTHLY") return addCalendarMonths(date, -1);
+  return new Date(date);
 }
 
 async function syncRecurringTasks() {
-  const now = new Date();
-  const recurringTasks = await prisma.task.findMany({
+  // Single atomic write — DB serializes concurrent calls so a recurring task
+  // can't be reset twice when two requests race.
+  await prisma.task.updateMany({
     where: {
       completed: true,
       NOT: { recurrence: "NONE" },
-      nextResetAt: { lte: now },
+      nextResetAt: { lte: new Date() },
+    },
+    data: {
+      completed: false,
+      lastCompletedAt: null,
+      nextResetAt: null,
     },
   });
-
-  if (recurringTasks.length === 0) return;
-
-  await Promise.all(
-    recurringTasks.map((task) =>
-      prisma.task.update({
-        where: { id: task.id },
-        data: {
-          completed: false,
-          lastCompletedAt: null,
-          nextResetAt: null,
-        },
-      })
-    )
-  );
 }
 
 type SharedTask = Omit<PrismaTask, "assignee" | "priority" | "bucket" | "recurrence"> & {
