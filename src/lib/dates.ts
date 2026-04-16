@@ -53,11 +53,10 @@ export function addCalendarMonths(date: Date, months: number): Date {
 // today" because UTC has rolled over.
 export function daysUntilCalendarDate(date: Date | string, now: Date = new Date()): number {
   const target = typeof date === "string" ? new Date(date) : date;
-  const targetMidnight = new Date(target);
-  targetMidnight.setHours(0, 0, 0, 0);
-  const todayMidnight = new Date(now);
-  todayMidnight.setHours(0, 0, 0, 0);
-  // Math.round, not floor — DST transitions make a "1 day" diff land at 23 or 25
-  // hours, which floor would round down to 0.
-  return Math.round((targetMidnight.getTime() - todayMidnight.getTime()) / DAY_MS);
+  // Extract the calendar day from the UTC-noon anchor so TZ doesn't shift it.
+  const targetDayMs = Date.UTC(target.getUTCFullYear(), target.getUTCMonth(), target.getUTCDate());
+  // "Today" is a viewer/local concept.
+  const todayDayMs = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  // Math.round handles any sub-day residual from DST boundaries on `now`.
+  return Math.round((targetDayMs - todayDayMs) / DAY_MS);
 }
