@@ -26,9 +26,9 @@ export function formatCalendarDateForInput(date: Date | string | null | undefine
   if (Number.isNaN(parsed.getTime())) return "";
   // Read components in local time. Because calendar dates are pinned to UTC
   // noon, any TZ between UTC-12 and UTC+12 reads back the same calendar day.
-  const y = parsed.getFullYear();
-  const m = `${parsed.getMonth() + 1}`.padStart(2, "0");
-  const d = `${parsed.getDate()}`.padStart(2, "0");
+  const y = parsed.getUTCFullYear();
+  const m = `${parsed.getUTCMonth() + 1}`.padStart(2, "0");
+  const d = `${parsed.getUTCDate()}`.padStart(2, "0");
   return `${y}-${m}-${d}`;
 }
 
