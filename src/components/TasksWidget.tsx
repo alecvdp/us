@@ -18,6 +18,10 @@ import {
 import ConfirmDialog from "./ConfirmDialog";
 import styles from "./TasksWidget.module.css";
 import {
+  daysUntilCalendarDate,
+  formatCalendarDateForInput,
+} from "@/lib/dates";
+import {
   taskAssigneeMeta,
   taskAssigneeOrder,
   taskBucketMeta,
@@ -54,34 +58,17 @@ function getTaskSection(task: Task): TaskSection {
   return task.bucket;
 }
 
-function formatDateForInput(date: Task["dueDate"]) {
-  if (!date) return "";
-  const parsed = new Date(date);
-  const year = parsed.getFullYear();
-  const month = `${parsed.getMonth() + 1}`.padStart(2, "0");
-  const day = `${parsed.getDate()}`.padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
 function formatResetLabel(date: Task["nextResetAt"]) {
   if (!date) return null;
-  const resetDate = new Date(date);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  resetDate.setHours(0, 0, 0, 0);
-  const diffDays = Math.round((resetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  const diffDays = daysUntilCalendarDate(date);
   if (diffDays <= 0) return "Resets today";
   if (diffDays === 1) return "Resets tomorrow";
-  return `Resets ${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(resetDate)}`;
+  return `Resets ${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(date))}`;
 }
 
 function getDueLabel(date: Task["dueDate"]) {
   if (!date) return null;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const due = new Date(date);
-  due.setHours(0, 0, 0, 0);
-  const diff = Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  const diff = daysUntilCalendarDate(date);
   if (diff < 0) return { text: `${Math.abs(diff)}d overdue`, isUrgent: true };
   if (diff === 0) return { text: "today", isUrgent: true };
   if (diff === 1) return { text: "tomorrow", isUrgent: false };
@@ -202,7 +189,7 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
     setEditingPriority(task.priority);
     setEditingBucket(task.bucket);
     setEditingRecurrence(task.recurrence);
-    setEditingDueDate(formatDateForInput(task.dueDate));
+    setEditingDueDate(formatCalendarDateForInput(task.dueDate));
     setEditingIsGrocery(task.isGrocery);
   }
 
@@ -276,7 +263,7 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
             onDrop={async (e) => {
               e.preventDefault();
               const taskId = e.dataTransfer.getData("text/task-id");
-              const draggedTask = initialTasks.find((t) => t.id === taskId);
+              const draggedTask = optimisticTasks.find((t) => t.id === taskId);
               if (draggedTask) await handleMove(draggedTask, section);
             }}
           >
