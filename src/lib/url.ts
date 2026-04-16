@@ -11,7 +11,7 @@ export function normalizeExternalUrl(input: string): string | null {
   // Default to https:// when the user typed a bare hostname like "example.com".
   // Any other scheme (including javascript:, data:, etc.) gets parsed as-is and
   // then rejected unless it's http or https.
-  const candidate = /^[a-z][a-z0-9+.-]*:/i.test(trimmed)
+  const candidate = /^[a-z][a-z0-9+-]*:/i.test(trimmed)
     ? trimmed
     : `https://${trimmed}`;
 
