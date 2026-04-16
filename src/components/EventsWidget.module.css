@@ -132,3 +132,12 @@
   margin-top: var(--spacing-sm);
   align-items: center;
 }
+
+.dateTimeRow {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.timeInput {
+  max-width: 110px;
+}

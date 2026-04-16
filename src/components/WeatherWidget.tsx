@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import styles from "./WeatherWidget.module.css";
-import { AlertTriangle, Cloud, CloudRain, Sun, CloudLightning, CloudSnow, Loader2, Plus, Settings, Trash2, X } from "lucide-react";
+import { AlertTriangle, Cloud, CloudRain, Sun, CloudLightning, CloudSnow, Plus, Settings, Trash2, X } from "lucide-react";
 import { addWeatherLocation, deleteWeatherLocation } from "@/app/actions/weather";
+import ConfirmDialog from "./ConfirmDialog";
 
 type LocationItem = {
   id: string;
@@ -39,58 +40,30 @@ const getWeatherDesc = (code: number) => {
   return "Unknown";
 };
 
-const badgeClassMap: Record<string, string> = {
-  Home: styles.badgeHome,
-  Work: styles.badgeWork,
-};
+function badgeColor(badge: string) {
+  let hash = 0;
+  for (let i = 0; i < badge.length; i++) {
+    hash = badge.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = ((hash % 360) + 360) % 360;
+  return {
+    background: `hsla(${hue}, 40%, 50%, 0.2)`,
+    color: `hsl(${hue}, 45%, 70%)`,
+    border: `1px solid hsla(${hue}, 40%, 50%, 0.3)`,
+  };
+}
 
-export default function WeatherWidget({ initialLocations }: { initialLocations: LocationItem[] }) {
-  const [weatherData, setWeatherData] = useState<(WeatherData | null)[]>(
-    () => initialLocations.map(() => null)
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+export default function WeatherWidget({
+  initialLocations,
+  initialWeather,
+}: {
+  initialLocations: LocationItem[];
+  initialWeather: (WeatherData | null)[];
+}) {
   const [editing, setEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
-
-  useEffect(() => {
-    if (initialLocations.length === 0) {
-      setLoading(false);
-      return;
-    }
-
-    async function fetchWeather() {
-      try {
-        const responses = await Promise.all(
-          initialLocations.map((loc) =>
-            fetch(
-              `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current_weather=true&temperature_unit=fahrenheit`
-            )
-          )
-        );
-
-        const results = await Promise.all(responses.map((r) => r.json()));
-
-        setWeatherData(
-          results.map((data) => ({
-            temp: Math.round(data.current_weather.temperature),
-            conditionCode: data.current_weather.weathercode,
-          }))
-        );
-        setError(false);
-      } catch (err) {
-        console.error("Failed to fetch weather", err);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchWeather();
-    const interval = setInterval(fetchWeather, 30 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [initialLocations]);
 
   async function handleAdd(formData: FormData) {
     if (isSubmitting) return;
@@ -103,17 +76,14 @@ export default function WeatherWidget({ initialLocations }: { initialLocations: 
     }
   }
 
-  async function handleDelete(id: string) {
-    if (confirm("Remove this weather location?")) {
-      await deleteWeatherLocation(id);
+  async function handleConfirmDelete() {
+    if (deleteTarget) {
+      await deleteWeatherLocation(deleteTarget);
+      setDeleteTarget(null);
     }
   }
 
-  if (loading) {
-    return <div className={styles.loader}><Loader2 className="lucide-spin" /> Loading weather...</div>;
-  }
-
-  if (!editing && error && weatherData.every((d) => d === null)) {
+  if (!editing && initialWeather.every((d) => d === null)) {
     return (
       <div className={styles.loader}>
         <AlertTriangle size={18} /> Unable to load weather data.
@@ -124,19 +94,19 @@ export default function WeatherWidget({ initialLocations }: { initialLocations: 
   return (
     <div className={styles.container}>
       {initialLocations.map((location, i) => {
-        const data = weatherData[i];
+        const data = initialWeather[i];
         return (
           <div key={location.id} className={styles.locationCard}>
             <div className={styles.cardHeader}>
               <span className={styles.city}>{location.name}</span>
               <div className={styles.cardHeaderRight}>
-                <span className={badgeClassMap[location.badge] ?? styles.badgeWork}>
+                <span className={styles.badge} style={badgeColor(location.badge)}>
                   {location.badge}
                 </span>
                 {editing && (
                   <button
                     className={`${styles.deleteBtn} btn-icon`}
-                    onClick={() => handleDelete(location.id)}
+                    onClick={() => setDeleteTarget(location.id)}
                     title="Remove location"
                   >
                     <Trash2 size={14} />
@@ -184,6 +154,14 @@ export default function WeatherWidget({ initialLocations }: { initialLocations: 
       >
         {editing ? <X size={16} /> : <Settings size={16} />}
       </button>
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Remove location"
+        message="This weather location will be permanently removed."
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

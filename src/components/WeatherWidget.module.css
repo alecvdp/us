@@ -39,22 +39,9 @@
   font-size: 0.95rem;
 }
 
-.badgeHome {
+.badge {
   font-size: 0.65rem;
   text-transform: uppercase;
-  background: rgba(212, 148, 107, 0.2);
-  color: var(--accent-light);
-  border: 1px solid rgba(212, 148, 107, 0.3);
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.badgeWork {
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  background: rgba(123, 159, 191, 0.2);
-  color: #A3C4DB;
-  border: 1px solid rgba(123, 159, 191, 0.3);
   padding: 2px 6px;
   border-radius: 4px;
 }

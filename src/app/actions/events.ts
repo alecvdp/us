@@ -17,10 +17,13 @@ export async function getEvents() {
 export async function addEvent(formData: FormData) {
   const title = formData.get("title")?.toString();
   const dateStr = formData.get("date")?.toString();
+  const timeStr = formData.get("time")?.toString();
 
   if (!title || !dateStr) return;
 
-  const date = new Date(dateStr);
+  const date = timeStr
+    ? new Date(`${dateStr}T${timeStr}`)
+    : new Date(`${dateStr}T00:00:00`);
   if (isNaN(date.getTime())) return;
 
   try {

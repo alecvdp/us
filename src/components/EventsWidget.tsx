@@ -65,12 +65,24 @@ export default function EventsWidget({
     }
   }, [deleteTarget]);
 
+  const hasTime = (date: Date) => {
+    const d = new Date(date);
+    return d.getHours() !== 0 || d.getMinutes() !== 0;
+  };
+
   const formatEventDate = (date: Date) => {
-    return new Intl.DateTimeFormat("en-US", {
+    const d = new Date(date);
+    const datePart = new Intl.DateTimeFormat("en-US", {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
-    }).format(new Date(date));
+    }).format(d);
+    if (!hasTime(d)) return datePart;
+    const timePart = new Intl.DateTimeFormat("en-US", {
+      hour: 'numeric',
+      minute: '2-digit',
+    }).format(d);
+    return `${datePart} · ${timePart}`;
   };
 
   const getDaysUntil = (date: Date) => {
@@ -149,7 +161,10 @@ export default function EventsWidget({
 
       <form ref={formRef} action={handleAdd} className={styles.addForm}>
         <input type="text" name="title" placeholder="Event name" className="input-base" required />
-        <input type="date" name="date" className="input-base" required />
+        <div className={styles.dateTimeRow}>
+          <input type="date" name="date" className="input-base" required />
+          <input type="time" name="time" className={`input-base ${styles.timeInput}`} />
+        </div>
         <button type="submit" className="btn-icon">
           <CalendarDays size={16} />
           <Plus size={16} />

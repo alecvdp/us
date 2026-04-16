@@ -5,7 +5,7 @@ import { getTasks } from "@/app/actions/tasks";
 import { getNotes } from "@/app/actions/notes";
 import { getLinks } from "@/app/actions/links";
 import { getEvents } from "@/app/actions/events";
-import { getWeatherLocations } from "@/app/actions/weather";
+import { getWeatherLocations, getWeatherData } from "@/app/actions/weather";
 
 import TasksWidget from "@/components/TasksWidget";
 import WhiteboardWidget from "@/components/WhiteboardWidget";
@@ -23,6 +23,10 @@ export default async function Home() {
     getEvents(),
     getWeatherLocations(),
   ]);
+
+  const weatherData = await getWeatherData(
+    weatherLocations.map((l) => ({ latitude: l.latitude, longitude: l.longitude }))
+  );
 
   return (
     <>
@@ -100,7 +104,7 @@ export default async function Home() {
           </div>
           <div className={styles.widgetContent}>
             <ErrorBoundary widgetName="Weather">
-              <WeatherWidget initialLocations={weatherLocations} />
+              <WeatherWidget initialLocations={weatherLocations} initialWeather={weatherData} />
             </ErrorBoundary>
           </div>
         </div>

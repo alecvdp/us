@@ -70,6 +70,30 @@ export async function addWeatherLocation(formData: FormData) {
   revalidatePath("/");
 }
 
+export async function getWeatherData(locations: { latitude: number; longitude: number }[]) {
+  if (locations.length === 0) return [];
+
+  try {
+    const results = await Promise.all(
+      locations.map(async (loc) => {
+        const res = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current_weather=true&temperature_unit=fahrenheit`,
+          { next: { revalidate: 600 } }
+        );
+        if (!res.ok) return null;
+        const data = await res.json();
+        return {
+          temp: Math.round(data.current_weather.temperature) as number,
+          conditionCode: data.current_weather.weathercode as number,
+        };
+      })
+    );
+    return results;
+  } catch {
+    return locations.map(() => null);
+  }
+}
+
 export async function deleteWeatherLocation(id: string) {
   try {
     await prisma.weatherLocation.delete({ where: { id } });

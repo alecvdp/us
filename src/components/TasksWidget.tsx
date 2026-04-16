@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useOptimistic, useMemo, useRef, useState, useTransition } from "react";
 import { addTask, deleteTask, moveTask, toggleTask, updateTask } from "@/app/actions/tasks";
 import {
   Archive,
@@ -15,6 +15,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import ConfirmDialog from "./ConfirmDialog";
 import styles from "./TasksWidget.module.css";
 import {
   taskAssigneeMeta,
@@ -96,6 +97,12 @@ const sectionIcons: Record<TaskSection, React.ReactNode> = {
 };
 
 export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) {
+  const [optimisticTasks, setOptimisticTasks] = useOptimistic(
+    initialTasks,
+    (state: Task[], update: { id: string; completed: boolean }) =>
+      state.map((t) => (t.id === update.id ? { ...t, completed: update.completed } : t))
+  );
+  const [, startTransition] = useTransition();
   const [statusFilter, setStatusFilter] = useState<"open" | "completed" | "all">("open");
   const [typeFilter, setTypeFilter] = useState<"all" | "tasks" | "groceries">("all");
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
@@ -111,11 +118,12 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
   const [newTaskType, setNewTaskType] = useState<"false" | "true">("false");
   const [showAddForm, setShowAddForm] = useState(false);
   const [dragTarget, setDragTarget] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const addFormRef = useRef<HTMLFormElement>(null);
 
   const filteredTasks = useMemo(
     () =>
-      initialTasks.filter((task) => {
+      optimisticTasks.filter((task) => {
         const matchesStatus =
           statusFilter === "all" ||
           (statusFilter === "open" ? !task.completed : task.completed);
@@ -124,7 +132,7 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
           (typeFilter === "tasks" ? !task.isGrocery : task.isGrocery);
         return matchesStatus && matchesType;
       }),
-    [initialTasks, statusFilter, typeFilter],
+    [optimisticTasks, statusFilter, typeFilter],
   );
 
   const sectionedTasks = useMemo(
@@ -150,30 +158,26 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
     }
   }
 
-  async function handleToggle(id: string, completed: boolean) {
-    setLoadingIds((prev) => new Set(prev).add(id));
-    try {
+  function handleToggle(id: string, completed: boolean) {
+    startTransition(async () => {
+      setOptimisticTasks({ id, completed: !completed });
       await toggleTask(id, !completed);
-    } finally {
-      setLoadingIds((prev) => {
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
-    }
+    });
   }
 
-  async function handleDelete(id: string) {
-    setLoadingIds((prev) => new Set(prev).add(id));
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return;
+    setLoadingIds((prev) => new Set(prev).add(deleteTarget));
     try {
-      await deleteTask(id);
-      if (editingTaskId === id) setEditingTaskId(null);
+      await deleteTask(deleteTarget);
+      if (editingTaskId === deleteTarget) setEditingTaskId(null);
     } finally {
       setLoadingIds((prev) => {
         const next = new Set(prev);
-        next.delete(id);
+        next.delete(deleteTarget!);
         return next;
       });
+      setDeleteTarget(null);
     }
   }
 
@@ -435,7 +439,7 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
                           <button
                             type="button"
                             className="btn-icon"
-                            onClick={() => handleDelete(task.id)}
+                            onClick={() => setDeleteTarget(task.id)}
                             disabled={isBusy}
                           >
                             <Trash2 size={14} />
@@ -550,6 +554,14 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
           {showAddForm ? <X size={22} /> : <Plus size={22} />}
         </button>
       </div>
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete task"
+        message="This task will be permanently deleted."
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

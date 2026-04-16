@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { createNote, updateNote, renameNote, deleteNote } from "@/app/actions/notes";
 import styles from "./WhiteboardWidget.module.css";
 import { Save, Plus, Check, X } from "lucide-react";
+import ConfirmDialog from "./ConfirmDialog";
 
 type Note = {
   id: string;
@@ -20,6 +21,7 @@ export default function WhiteboardWidget({ initialNotes }: { initialNotes: Note[
   const [titleDraft, setTitleDraft] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [newTitle, setNewTitle] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const timeoutRefs = useRef<Record<string, NodeJS.Timeout>>({});
   const titleInputRef = useRef<HTMLInputElement>(null);
   const newTitleInputRef = useRef<HTMLInputElement>(null);
@@ -95,17 +97,16 @@ export default function WhiteboardWidget({ initialNotes }: { initialNotes: Note[
     await renameNote(id, title);
   }
 
-  async function handleDelete(id: string) {
-    if (initialNotes.length <= 1) return;
-    if (!confirm("Delete this note?")) return;
-    if (timeoutRefs.current[id]) clearTimeout(timeoutRefs.current[id]);
-    // Clean up local state for deleted note
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return;
+    if (timeoutRefs.current[deleteTarget]) clearTimeout(timeoutRefs.current[deleteTarget]);
     setEdits((prev) => {
       const next = { ...prev };
-      delete next[id];
+      delete next[deleteTarget];
       return next;
     });
-    await deleteNote(id);
+    await deleteNote(deleteTarget);
+    setDeleteTarget(null);
   }
 
   const isSaving = savingIds.has(effectiveActiveId);
@@ -156,7 +157,7 @@ export default function WhiteboardWidget({ initialNotes }: { initialNotes: Note[
               {initialNotes.length > 1 && note.id === effectiveActiveId && (
                 <button
                   className={`${styles.tabClose} btn-icon`}
-                  onClick={() => handleDelete(note.id)}
+                  onClick={() => setDeleteTarget(note.id)}
                   title="Delete note"
                 >
                   <X size={12} />
@@ -227,6 +228,14 @@ export default function WhiteboardWidget({ initialNotes }: { initialNotes: Note[
       ) : (
         <p className={styles.empty}>No notes yet. Create one to get started.</p>
       )}
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete note"
+        message="This note will be permanently deleted."
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }
