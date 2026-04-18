@@ -46,18 +46,28 @@ export default function ConfirmDialog({
 
   if (!open) return null;
 
+  const titleId = "confirm-dialog-title";
+  const descId = "confirm-dialog-desc";
+
   return (
-    <dialog ref={dialogRef} className={styles.dialog} onClick={(e) => {
-      if (e.target === dialogRef.current) onCancel();
-    }}>
+    <dialog
+      ref={dialogRef}
+      className={styles.dialog}
+      role="alertdialog"
+      aria-labelledby={titleId}
+      aria-describedby={descId}
+      onClick={(e) => {
+        if (e.target === dialogRef.current) onCancel();
+      }}
+    >
       <div className={styles.content}>
-        <h3 className={styles.title}>{title}</h3>
-        <p className={styles.message}>{message}</p>
+        <h3 id={titleId} className={styles.title}>{title}</h3>
+        <p id={descId} className={styles.message}>{message}</p>
         <div className={styles.actions}>
           <button className={styles.cancelBtn} onClick={onCancel}>
             Cancel
           </button>
-          <button className={styles.confirmBtn} onClick={onConfirm}>
+          <button className={styles.confirmBtn} onClick={onConfirm} autoFocus>
             {confirmLabel}
           </button>
         </div>
