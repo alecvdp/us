@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { CloudSun, LayoutDashboard, ListTodo, Calendar, Link as LinkIcon, Edit3 } from "lucide-react";
 import styles from "./page.module.css";
 
