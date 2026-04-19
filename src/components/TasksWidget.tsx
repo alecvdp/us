@@ -233,6 +233,7 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
                   task={task}
                   isBusy={loadingIds.has(task.id)}
                   isEditing={editingTaskId === task.id}
+                  currentSection={section}
                   editState={{
                     title: editingTitle,
                     assignee: editingAssignee,
@@ -248,6 +249,7 @@ export default function TasksWidget({ initialTasks }: { initialTasks: Task[] }) 
                   onSaveEdit={handleUpdate}
                   onDelete={setDeleteTarget}
                   onEditChange={handleEditChange}
+                  onMove={handleMove}
                 />
               ))}
             </ul>
