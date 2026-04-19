@@ -1,0 +1,148 @@
+.monthView {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.dayHeader {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 4px 0;
+  text-transform: uppercase;
+}
+
+.emptyCell {
+  aspect-ratio: 1;
+}
+
+.dayCell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+  padding: 2px;
+  font-family: inherit;
+}
+
+.dayCell:hover {
+  background: var(--surface-hover);
+  border-color: var(--surface-border);
+}
+
+.dayNumber {
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.today {
+  background: rgba(212, 148, 107, 0.1);
+  border-color: var(--accent-color);
+}
+
+.today .dayNumber {
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+.selected {
+  background: rgba(212, 148, 107, 0.2);
+  border-color: var(--accent-light);
+}
+
+.dots {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}
+
+.eventDot {
+  background: var(--accent-color);
+}
+
+.taskDot {
+  background: var(--color-info);
+}
+
+.moreCount {
+  font-size: 0.55rem;
+  color: var(--text-secondary);
+}
+
+.dayDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+}
+
+.dayDetailHeader {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-light);
+}
+
+.emptyDay {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.dayItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.itemDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dayItemTitle {
+  flex-grow: 1;
+}
+
+.itemBadge {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.eventBadge {
+  background: rgba(212, 148, 107, 0.15);
+  color: var(--accent-light);
+}
+
+.taskBadge {
+  background: rgba(123, 159, 191, 0.14);
+  color: #A3C4DB;
+}
