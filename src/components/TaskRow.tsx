@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import {
+  ArrowUpDown,
   CalendarDays,
   Check,
   Flag,
@@ -23,10 +25,13 @@ import {
   taskPriorityOrder,
   taskRecurrenceMeta,
   taskRecurrenceOrder,
+  taskSectionMeta,
+  taskSectionOrder,
   type TaskAssignee,
   type TaskBucket,
   type TaskPriority,
   type TaskRecurrence,
+  type TaskSection,
 } from "@/lib/tasks";
 import type { Task } from "./TasksWidget";
 
@@ -51,6 +56,7 @@ type TaskRowProps = {
   task: Task;
   isBusy: boolean;
   isEditing: boolean;
+  currentSection: TaskSection;
   editState: {
     title: string;
     assignee: TaskAssignee;
@@ -66,12 +72,14 @@ type TaskRowProps = {
   onSaveEdit: (taskId: string) => void;
   onDelete: (taskId: string) => void;
   onEditChange: (field: string, value: string | boolean) => void;
+  onMove: (task: Task, section: TaskSection) => void;
 };
 
 export default function TaskRow({
   task,
   isBusy,
   isEditing,
+  currentSection,
   editState,
   onToggle,
   onStartEdit,
@@ -79,9 +87,32 @@ export default function TaskRow({
   onSaveEdit,
   onDelete,
   onEditChange,
+  onMove,
 }: TaskRowProps) {
   const dueInfo = getDueLabel(task.dueDate);
   const resetLabel = task.completed ? formatResetLabel(task.nextResetAt) : null;
+  const [moveMenuOpen, setMoveMenuOpen] = useState(false);
+  const moveMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!moveMenuOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (moveMenuRef.current && !moveMenuRef.current.contains(e.target as Node)) {
+        setMoveMenuOpen(false);
+      }
+    }
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === "Escape") setMoveMenuOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [moveMenuOpen]);
+
+  const moveTargets = taskSectionOrder.filter((s) => s !== currentSection);
 
   if (isEditing) {
     return (
@@ -208,6 +239,39 @@ export default function TaskRow({
       </div>
 
       <div className={styles.taskActions}>
+        <div className={styles.moveMenuWrapper} ref={moveMenuRef}>
+          <button
+            type="button"
+            className="btn-icon"
+            onClick={() => setMoveMenuOpen((v) => !v)}
+            disabled={isBusy}
+            aria-haspopup="true"
+            aria-expanded={moveMenuOpen}
+            aria-label="Move task to another section"
+            title="Move to…"
+          >
+            <ArrowUpDown size={14} />
+          </button>
+          {moveMenuOpen && (
+            <ul className={styles.moveMenu} role="menu">
+              {moveTargets.map((section) => (
+                <li key={section} role="none">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className={styles.moveMenuItem}
+                    onClick={() => {
+                      setMoveMenuOpen(false);
+                      onMove(task, section);
+                    }}
+                  >
+                    {taskSectionMeta[section].label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <button type="button" className="btn-icon" onClick={() => onStartEdit(task)} disabled={isBusy}>
           <Pencil size={14} />
         </button>
