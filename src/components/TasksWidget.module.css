@@ -247,8 +247,49 @@
   flex-shrink: 0;
 }
 
-.taskRow:hover .taskActions {
+.taskRow:hover .taskActions,
+.taskRow:focus-within .taskActions {
   opacity: 1;
+}
+
+/* ── Move menu ── */
+
+.moveMenuWrapper {
+  position: relative;
+}
+
+.moveMenu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 20;
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 4px 0;
+  min-width: 140px;
+  background: var(--surface-elevated, #2a2d35);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.moveMenuItem {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  padding: 7px 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.moveMenuItem:hover,
+.moveMenuItem:focus-visible {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* ── Edit card ── */
