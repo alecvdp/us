@@ -1,0 +1,137 @@
+.weekView {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.dayColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.dayColumn:hover {
+  background: var(--surface-hover);
+  border-color: var(--surface-border);
+}
+
+.dayLabel {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.dayNum {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.itemCount {
+  font-size: 0.65rem;
+  background: var(--accent-color);
+  color: var(--bg-color);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.today {
+  background: rgba(212, 148, 107, 0.1);
+  border-color: var(--accent-color);
+}
+
+.today .dayNum {
+  color: var(--accent-color);
+}
+
+.selected {
+  background: rgba(212, 148, 107, 0.2);
+  border-color: var(--accent-light);
+}
+
+.dayDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+}
+
+.dayDetailHeader {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-light);
+}
+
+.emptyDay {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.dayItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.itemDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.eventDot {
+  background: var(--accent-color);
+}
+
+.taskDot {
+  background: var(--color-info);
+}
+
+.dayItemTitle {
+  flex-grow: 1;
+}
+
+.itemBadge {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.eventBadge {
+  background: rgba(212, 148, 107, 0.15);
+  color: var(--accent-light);
+}
+
+.taskBadge {
+  background: rgba(123, 159, 191, 0.14);
+  color: #A3C4DB;
+}
