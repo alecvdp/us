@@ -2,16 +2,33 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { syncIfStale, getGoogleAccounts, disconnectGoogleAccount } from "@/lib/google-calendar";
 
 export async function getEvents() {
+  // Lazy sync: pull Google Calendar events if stale
+  try {
+    await syncIfStale();
+  } catch (err) {
+    console.error("Lazy calendar sync failed:", err);
+  }
+
   return await prisma.event.findMany({
     orderBy: { date: 'asc' },
     where: {
       date: {
-        gte: new Date(new Date().setHours(0, 0, 0, 0)) // only today or future
+        gte: new Date(new Date().setHours(0, 0, 0, 0))
       }
     }
   });
+}
+
+export async function getCalendarStatus() {
+  return getGoogleAccounts();
+}
+
+export async function disconnectCalendar(accountId: string) {
+  await disconnectGoogleAccount(accountId);
+  revalidatePath("/");
 }
 
 export async function addEvent(formData: FormData) {
