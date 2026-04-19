@@ -13,7 +13,8 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/icon-") ||
     pathname.startsWith("/apple-touch-icon") ||
     pathname.startsWith("/_next/") ||
-    pathname.startsWith("/favicon")
+    pathname.startsWith("/favicon") ||
+    pathname.startsWith("/api/auth/google")
   ) {
     return NextResponse.next();
   }

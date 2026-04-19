@@ -6,7 +6,7 @@ import styles from "./page.module.css";
 import { getTasks } from "@/app/actions/tasks";
 import { getNotes } from "@/app/actions/notes";
 import { getLinks } from "@/app/actions/links";
-import { getEvents } from "@/app/actions/events";
+import { getEvents, getCalendarStatus } from "@/app/actions/events";
 import { getWeatherLocations, getWeatherData } from "@/app/actions/weather";
 
 import TasksWidget from "@/components/TasksWidget";
@@ -18,12 +18,13 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import AutoRefresh from "@/components/AutoRefresh";
 
 export default async function Home() {
-  const [tasks, notes, links, events, weatherLocations] = await Promise.all([
+  const [tasks, notes, links, events, weatherLocations, googleAccounts] = await Promise.all([
     getTasks(),
     getNotes(),
     getLinks(),
     getEvents(),
     getWeatherLocations(),
+    getCalendarStatus(),
   ]);
 
   const weatherData = await getWeatherData(
@@ -92,7 +93,7 @@ export default async function Home() {
           </div>
           <div className={styles.widgetContent}>
             <ErrorBoundary widgetName="Calendar">
-              <EventsWidget initialEvents={events} initialTasks={tasks} />
+              <EventsWidget initialEvents={events} initialTasks={tasks} googleAccounts={googleAccounts} />
             </ErrorBoundary>
           </div>
         </div>

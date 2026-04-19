@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { addEvent, deleteEvent } from "@/app/actions/events";
-import { CalendarDays, CheckSquare2, Plus, Trash2 } from "lucide-react";
+import { addEvent, deleteEvent, disconnectCalendar } from "@/app/actions/events";
+import { CalendarDays, CheckSquare2, Plus, Trash2, Link2, Unlink } from "lucide-react";
 import ConfirmDialog from "./ConfirmDialog";
 import styles from "./EventsWidget.module.css";
 import { daysUntilCalendarDate } from "@/lib/dates";
@@ -12,6 +12,7 @@ type EventItem = {
   id: string;
   title: string;
   date: Date;
+  source: string;
 };
 
 type TaskItem = {
@@ -22,12 +23,19 @@ type TaskItem = {
   completed: boolean;
 };
 
+type GoogleAccountInfo = {
+  id: string;
+  email: string;
+  lastSyncAt: Date | null;
+};
+
 type AgendaItem =
   | {
       id: string;
       title: string;
       date: Date;
       kind: "event";
+      source: string;
     }
   | {
       id: string;
@@ -35,17 +43,21 @@ type AgendaItem =
       date: Date;
       kind: "task";
       assignee: TaskAssignee;
+      source?: undefined;
     };
 
 export default function EventsWidget({
   initialEvents,
   initialTasks,
+  googleAccounts,
 }: {
   initialEvents: EventItem[];
   initialTasks: TaskItem[];
+  googleAccounts: GoogleAccountInfo[];
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [disconnectTarget, setDisconnectTarget] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   async function handleAdd(formData: FormData) {
@@ -65,6 +77,13 @@ export default function EventsWidget({
       setDeleteTarget(null);
     }
   }, [deleteTarget]);
+
+  const handleConfirmDisconnect = useCallback(async () => {
+    if (disconnectTarget) {
+      await disconnectCalendar(disconnectTarget);
+      setDisconnectTarget(null);
+    }
+  }, [disconnectTarget]);
 
   const hasTime = (date: Date) => {
     const d = new Date(date);
@@ -103,6 +122,7 @@ export default function EventsWidget({
       title: event.title,
       date: new Date(event.date),
       kind: "event" as const,
+      source: event.source,
     })),
     ...initialTasks
       .filter((task) => !task.completed && task.dueDate)
@@ -117,11 +137,37 @@ export default function EventsWidget({
 
   return (
     <div className={styles.container}>
+      {/* Google Calendar connection status */}
+      <div className={styles.calendarStatus}>
+        {googleAccounts.length > 0 ? (
+          googleAccounts.map((account) => (
+            <div key={account.id} className={styles.connectedAccount}>
+              <span className={styles.connectedLabel}>
+                <Link2 size={12} />
+                {account.email}
+              </span>
+              <button
+                className={`${styles.disconnectBtn} btn-icon`}
+                onClick={() => setDisconnectTarget(account.id)}
+                title="Disconnect Google Calendar"
+              >
+                <Unlink size={12} />
+              </button>
+            </div>
+          ))
+        ) : (
+          <a href="/api/auth/google" className={styles.connectBtn}>
+            <CalendarDays size={14} />
+            Connect Google Calendar
+          </a>
+        )}
+      </div>
+
       <div className={styles.eventList}>
         {agendaItems.length === 0 ? (
           <p className={styles.empty}>No upcoming events or due tasks</p>
         ) : null}
-        
+
         {agendaItems.map((item) => (
           <div key={`${item.kind}-${item.id}`} className={styles.eventCard}>
             <div className={styles.dateBox}>
@@ -131,8 +177,14 @@ export default function EventsWidget({
             <div className={styles.eventInfo}>
               <div className={styles.itemHeader}>
                 <span className={styles.eventTitle}>{item.title}</span>
-                <span className={`${styles.itemBadge} ${item.kind === "task" ? styles.taskBadge : styles.eventBadge}`}>
-                  {item.kind === "task" ? "Task" : "Event"}
+                <span className={`${styles.itemBadge} ${
+                  item.kind === "task"
+                    ? styles.taskBadge
+                    : item.source === "google"
+                      ? styles.googleBadge
+                      : styles.eventBadge
+                }`}>
+                  {item.kind === "task" ? "Task" : item.source === "google" ? "Google" : "Event"}
                 </span>
               </div>
               <span className={styles.eventSub}>
@@ -145,15 +197,15 @@ export default function EventsWidget({
                 ) : null}
               </span>
             </div>
-            {item.kind === "event" ? (
+            {item.kind === "event" && item.source !== "google" ? (
               <button className={`${styles.deleteBtn} btn-icon`} onClick={() => setDeleteTarget(item.id)}>
                 <Trash2 size={14} />
               </button>
-            ) : (
+            ) : item.kind === "task" ? (
               <div className={styles.taskIconWrap}>
                 <CheckSquare2 size={15} />
               </div>
-            )}
+            ) : null}
           </div>
         ))}
       </div>
@@ -176,6 +228,14 @@ export default function EventsWidget({
         message="This event will be permanently removed."
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeleteTarget(null)}
+      />
+
+      <ConfirmDialog
+        open={disconnectTarget !== null}
+        title="Disconnect Google Calendar"
+        message="This will remove the connection and delete all synced Google events."
+        onConfirm={handleConfirmDisconnect}
+        onCancel={() => setDisconnectTarget(null)}
       />
     </div>
   );
